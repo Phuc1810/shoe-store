@@ -4,10 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Danh sách sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
 </head>
 <body>
-<main>
-    <h1>Danh sách sản phẩm</h1>
+<main class="container py-5">
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Danh sách sản phẩm</h1>
+            <p class="text-muted mb-0">Các mẫu giày đang được bán tại Shoe Store</p>
+        </div>
+        <a class="btn btn-outline-secondary" th:href="@{/}">Trang chủ</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">
+        Hiện chưa có sản phẩm đang hoạt động.
+    </div>
+
+    <div class="row g-4" th:if="${!#lists.isEmpty(products)}">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3" th:each="product : ${products}">
+            <article class="card h-100 shadow-sm">
+                <img class="card-img-top product-card-image"
+                     th:src="${product.imageUrl}"
+                     th:alt="${product.productName}">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                        <h2 class="h5 card-title mb-0" th:text="${product.productName}">Tên sản phẩm</h2>
+                        <span class="badge text-bg-success">ACTIVE</span>
+                    </div>
+                    <p class="small text-muted mb-2">
+                        <span th:text="${product.brandName}">Thương hiệu</span>
+                        <span> / </span>
+                        <span th:text="${product.categoryName}">Danh mục</span>
+                    </p>
+                    <p class="mb-2">
+                        <span class="badge text-bg-light border" th:text="${product.gender}">UNISEX</span>
+                    </p>
+                    <p class="fs-5 fw-semibold mb-3"
+                       th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                        0 đ
+                    </p>
+                    <a class="btn btn-primary mt-auto"
+                       th:href="@{/products/{id}(id=${product.productId})}">
+                        Xem chi tiết
+                    </a>
+                </div>
+            </article>
+        </div>
+    </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,1 +1,16 @@
-/* User pages styles will be added here. */
+.product-card-image {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background-color: #f8f9fa;
+}
+
+.product-detail-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background-color: #f8f9fa;
+}
+
+.product-description {
+    white-space: pre-line;
+}

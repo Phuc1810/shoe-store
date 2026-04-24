@@ -3,11 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chi tiết sản phẩm</title>
+    <title th:text="${product.productName} + ' - Shoe Store'">Chi tiết sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
 </head>
 <body>
-<main>
-    <h1>Chi tiết sản phẩm</h1>
+<main class="container py-5">
+    <a class="btn btn-outline-secondary mb-4" th:href="@{/products}">Quay lại danh sách sản phẩm</a>
+
+    <div class="row g-5">
+        <div class="col-12 col-lg-6">
+            <img id="mainProductImage"
+                 class="product-detail-image border"
+                 th:src="${product.mainImageUrl}"
+                 th:alt="${product.productName}">
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                <div>
+                    <h1 class="h2 mb-2" th:text="${product.productName}">Tên sản phẩm</h1>
+                    <p class="text-muted mb-0">
+                        <span th:text="${product.brandName}">Thương hiệu</span>
+                        <span> / </span>
+                        <span th:text="${product.categoryName}">Danh mục</span>
+                    </p>
+                </div>
+                <span class="badge text-bg-success" th:text="${product.status}">ACTIVE</span>
+            </div>
+
+            <p class="mb-2">
+                <span class="badge text-bg-light border" th:text="${product.gender}">UNISEX</span>
+            </p>
+
+            <p class="lead" th:text="${product.shortDescription}">Mô tả ngắn</p>
+
+            <p id="displayPrice" class="fs-3 fw-semibold"
+               th:text="${product.displayPrice != null ? #numbers.formatDecimal(product.displayPrice, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                0 đ
+            </p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="text-muted small">Màu đang chọn</div>
+                    <div id="selectedColor" class="fw-semibold">Chưa chọn</div>
+                </div>
+                <div class="col-6">
+                    <div class="text-muted small">Size đang chọn</div>
+                    <div id="selectedSize" class="fw-semibold">Chưa chọn</div>
+                </div>
+                <div class="col-6">
+                    <div class="text-muted small">Tồn kho</div>
+                    <div id="selectedStock" class="fw-semibold">Chưa chọn</div>
+                </div>
+                <div class="col-6">
+                    <div class="text-muted small">SKU</div>
+                    <div id="selectedSku" class="fw-semibold">Chưa chọn</div>
+                </div>
+            </div>
+
+            <section class="mb-4">
+                <h2 class="h5 mb-3">Biến thể sản phẩm</h2>
+                <div th:if="${#lists.isEmpty(product.variants)}" class="alert alert-info">
+                    Sản phẩm hiện chưa có biến thể
+                </div>
+
+                <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(product.variants)}">
+                    <button type="button"
+                            class="btn btn-outline-dark product-variant-option"
+                            th:each="variant, iterStat : ${product.variants}"
+                            th:classappend="${iterStat.first} ? ' active'"
+                            th:attr="data-image-url=${variant.imageUrl},
+                                     data-price=${variant.price != null ? #numbers.formatDecimal(variant.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'},
+                                     data-color=${variant.color},
+                                     data-size=${variant.size},
+                                     data-stock=${variant.stockQuantity},
+                                     data-sku=${variant.sku}"
+                            th:text="${variant.color + ' / ' + variant.size}">
+                        Màu / Size
+                    </button>
+                </div>
+            </section>
+
+            <button type="button" class="btn btn-primary btn-lg" disabled>Thêm vào giỏ hàng</button>
+        </div>
+    </div>
+
+    <section class="mt-5">
+        <h2 class="h4 mb-3">Mô tả chi tiết</h2>
+        <p class="product-description" th:text="${product.description}">Mô tả chi tiết</p>
+    </section>
 </main>
+
+<script th:src="@{/js/user/product-detail.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
