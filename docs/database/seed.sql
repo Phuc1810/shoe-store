@@ -1,0 +1,1 @@
+-- Du lieu mau se duoc bo sung o giai doan thiet ke database.
