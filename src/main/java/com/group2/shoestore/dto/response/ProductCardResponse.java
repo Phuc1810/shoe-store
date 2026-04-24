@@ -28,4 +28,8 @@ public class ProductCardResponse {
     private BigDecimal price;
 
     private String imageUrl;
+
+    private String status;
+
+    private Long soldQuantity;
 }

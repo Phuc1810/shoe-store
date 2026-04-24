@@ -74,7 +74,8 @@
                             class="btn btn-outline-dark product-variant-option"
                             th:each="variant, iterStat : ${product.variants}"
                             th:classappend="${iterStat.first} ? ' active'"
-                            th:attr="data-image-url=${variant.imageUrl},
+                            th:attr="data-variant-id=${variant.variantId},
+                                     data-image-url=${variant.imageUrl},
                                      data-price=${variant.price != null ? #numbers.formatDecimal(variant.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'},
                                      data-color=${variant.color},
                                      data-size=${variant.size},
@@ -86,7 +87,26 @@
                 </div>
             </section>
 
-            <button type="button" class="btn btn-primary btn-lg" disabled>Thêm vào giỏ hàng</button>
+            <form th:action="@{/cart/add}" method="post" class="d-flex flex-wrap align-items-end gap-3">
+                <input type="hidden" id="selectedVariantId" name="productVariantId">
+                <div>
+                    <label for="quantity" class="form-label">Số lượng</label>
+                    <input type="number"
+                           id="quantity"
+                           name="quantity"
+                           class="form-control"
+                           min="1"
+                           value="1"
+                           style="width: 120px;"
+                           th:disabled="${#lists.isEmpty(product.variants)}">
+                </div>
+                <button type="submit"
+                        id="addToCartButton"
+                        class="btn btn-primary btn-lg"
+                        th:disabled="${#lists.isEmpty(product.variants)}">
+                    Thêm vào giỏ hàng
+                </button>
+            </form>
         </div>
     </div>
 

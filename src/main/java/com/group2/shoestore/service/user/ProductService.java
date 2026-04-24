@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +29,15 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<ProductCardResponse> getActiveProductCards() {
+        return getActiveProductCards(null, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductCardResponse> getActiveProductCards(String keyword, String gender) {
         return productRepository.findByStatus(ACTIVE_STATUS)
                 .stream()
+                .filter(product -> matchesKeyword(product, keyword))
+                .filter(product -> matchesGender(product, gender))
                 .map(this::toProductCardResponse)
                 .toList();
     }
@@ -88,6 +96,8 @@ public class ProductService {
                 .gender(product.getGender())
                 .price(resolvePrice(product, firstActiveVariant))
                 .imageUrl(resolveImageUrl(firstActiveVariant))
+                .status(product.getStatus())
+                .soldQuantity(0L)
                 .build();
     }
 
@@ -116,5 +126,20 @@ public class ProductService {
                 .imageUrl(resolveImageUrl(variant))
                 .status(variant.getStatus())
                 .build();
+    }
+
+    private boolean matchesKeyword(Product product, String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return true;
+        }
+        return product.getName() != null
+                && product.getName().toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT).trim());
+    }
+
+    private boolean matchesGender(Product product, String gender) {
+        if (gender == null || gender.isBlank()) {
+            return true;
+        }
+        return gender.equalsIgnoreCase(product.getGender());
     }
 }
