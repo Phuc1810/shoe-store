@@ -37,4 +37,6 @@ public class ProductDetailResponse {
     private BigDecimal displayPrice;
 
     private List<ProductVariantResponse> variants;
+
+    private List<ProductCardResponse> suggestedProducts;
 }

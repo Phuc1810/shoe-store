@@ -1,10 +1,106 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <body>
-<header th:fragment="header" class="border-bottom">
-    <nav class="navbar navbar-expand-lg bg-white">
-        <div class="container">
-            <a class="navbar-brand fw-semibold" th:href="@{/}">Shoe Store</a>
+<header th:fragment="userHeader" class="sticky-top home-header">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container home-header-inner">
+            <a class="navbar-brand" th:href="@{/}">Shoe Store</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homeNavbar"
+                    aria-controls="homeNavbar" aria-expanded="false" aria-label="Mở menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="homeNavbar">
+                <ul class="navbar-nav home-main-menu">
+                    <li class="nav-item dropdown home-nav-dropdown">
+                        <a class="nav-link dropdown-toggle" th:href="@{/products}" role="button">Giày</a>
+                        <ul class="dropdown-menu">
+                            <li th:if="${#lists.isEmpty(home.shoeDropdownProducts)}">
+                                <span class="dropdown-item-text">Chưa có sản phẩm</span>
+                            </li>
+                            <li th:each="product : ${home.shoeDropdownProducts}">
+                                <a class="dropdown-item" th:href="@{/products/{id}(id=${product.productId})}"
+                                   th:text="${product.productName}">Sản phẩm</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown home-nav-dropdown">
+                        <a class="nav-link dropdown-toggle" th:href="@{/products(gender='MEN')}" role="button">Nam</a>
+                        <ul class="dropdown-menu">
+                            <li th:if="${#lists.isEmpty(home.menProducts)}">
+                                <span class="dropdown-item-text">Chưa có sản phẩm</span>
+                            </li>
+                            <li th:each="product : ${home.menProducts}">
+                                <a class="dropdown-item" th:href="@{/products/{id}(id=${product.productId})}"
+                                   th:text="${product.productName}">Sản phẩm</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown home-nav-dropdown">
+                        <a class="nav-link dropdown-toggle" th:href="@{/products(gender='WOMEN')}" role="button">Nữ</a>
+                        <ul class="dropdown-menu">
+                            <li th:if="${#lists.isEmpty(home.womenProducts)}">
+                                <span class="dropdown-item-text">Chưa có sản phẩm</span>
+                            </li>
+                            <li th:each="product : ${home.womenProducts}">
+                                <a class="dropdown-item" th:href="@{/products/{id}(id=${product.productId})}"
+                                   th:text="${product.productName}">Sản phẩm</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown home-nav-dropdown">
+                        <a class="nav-link dropdown-toggle" th:href="@{/products(gender='KIDS')}" role="button">Trẻ em</a>
+                        <ul class="dropdown-menu">
+                            <li th:if="${#lists.isEmpty(home.kidsProducts)}">
+                                <span class="dropdown-item-text">Chưa có sản phẩm</span>
+                            </li>
+                            <li th:each="product : ${home.kidsProducts}">
+                                <a class="dropdown-item" th:href="@{/products/{id}(id=${product.productId})}"
+                                   th:text="${product.productName}">Sản phẩm</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown home-nav-dropdown">
+                        <a class="nav-link dropdown-toggle" th:href="@{/products(gender='UNISEX')}" role="button">Unisex</a>
+                        <ul class="dropdown-menu">
+                            <li th:if="${#lists.isEmpty(home.unisexProducts)}">
+                                <span class="dropdown-item-text">Chưa có sản phẩm</span>
+                            </li>
+                            <li th:each="product : ${home.unisexProducts}">
+                                <a class="dropdown-item" th:href="@{/products/{id}(id=${product.productId})}"
+                                   th:text="${product.productName}">Sản phẩm</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="home-header-actions">
+                    <form class="home-search" method="get" th:action="@{/products}">
+                        <input class="form-control" type="search" name="keyword" placeholder="Tìm kiếm giày..."
+                               th:value="${keyword}"
+                               aria-label="Tìm kiếm">
+                        <button class="btn btn-primary" type="submit" aria-label="Tìm kiếm">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+
+                    <a class="btn home-icon-button" th:href="@{/cart}" aria-label="Giỏ hàng">
+                        <i class="bi bi-cart3"></i>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn home-icon-button dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản">
+                            <i class="bi bi-person"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{/profile}">Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" th:href="@{/orders}">Đơn hàng của tôi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/login}">Đăng nhập</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 </header>

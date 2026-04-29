@@ -80,7 +80,33 @@ public class ProductService {
                 .mainImageUrl(resolveImageUrl(firstActiveVariantWithImage))
                 .displayPrice(resolvePrice(product, firstActiveVariant))
                 .variants(variants)
+                .suggestedProducts(getSuggestedProducts(product, 4))
                 .build();
+    }
+
+    private List<ProductCardResponse> getSuggestedProducts(Product currentProduct, int limit) {
+        List<Product> activeProducts = productRepository.findByStatus(ACTIVE_STATUS);
+
+        List<ProductCardResponse> sameCategoryProducts = activeProducts.stream()
+                .filter(product -> !product.getId().equals(currentProduct.getId()))
+                .filter(product -> product.getCategory().getId().equals(currentProduct.getCategory().getId()))
+                .limit(limit)
+                .map(this::toProductCardResponse)
+                .toList();
+
+        if (sameCategoryProducts.size() >= limit) {
+            return sameCategoryProducts;
+        }
+
+        List<ProductCardResponse> otherProducts = activeProducts.stream()
+                .filter(product -> !product.getId().equals(currentProduct.getId()))
+                .filter(product -> !product.getCategory().getId().equals(currentProduct.getCategory().getId()))
+                .limit(limit - sameCategoryProducts.size())
+                .map(this::toProductCardResponse)
+                .toList();
+
+        return java.util.stream.Stream.concat(sameCategoryProducts.stream(), otherProducts.stream())
+                .toList();
     }
 
     private ProductCardResponse toProductCardResponse(Product product) {
@@ -132,8 +158,10 @@ public class ProductService {
         if (keyword == null || keyword.isBlank()) {
             return true;
         }
-        return product.getName() != null
-                && product.getName().toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT).trim());
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT).trim();
+        return containsIgnoreCase(product.getName(), normalizedKeyword)
+                || containsIgnoreCase(product.getBrand().getName(), normalizedKeyword)
+                || containsIgnoreCase(product.getCategory().getName(), normalizedKeyword);
     }
 
     private boolean matchesGender(Product product, String gender) {
@@ -141,5 +169,9 @@ public class ProductService {
             return true;
         }
         return gender.equalsIgnoreCase(product.getGender());
+    }
+
+    private boolean containsIgnoreCase(String value, String normalizedKeyword) {
+        return value != null && value.toLowerCase(Locale.ROOT).contains(normalizedKeyword);
     }
 }

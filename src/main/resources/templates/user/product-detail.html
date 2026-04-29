@@ -5,117 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${product.productName} + ' - Shoe Store'">Chi tiết sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <link rel="stylesheet" th:href="@{/css/user.css}">
 </head>
-<body>
-<main class="container py-5">
-    <a class="btn btn-outline-secondary mb-4" th:href="@{/products}">Quay lại danh sách sản phẩm</a>
+<body class="home-page">
+<header th:replace="~{layout/header :: userHeader}"></header>
 
-    <div class="row g-5">
-        <div class="col-12 col-lg-6">
-            <img id="mainProductImage"
-                 class="product-detail-image border"
-                 th:src="${product.mainImageUrl}"
-                 th:alt="${product.productName}">
-        </div>
+<main class="product-detail-page">
+    <section class="container product-detail-shell">
+        <div class="row g-5 align-items-start">
+            <div class="col-12 col-lg-6">
+                <div class="product-detail-media">
+                    <img id="mainProductImage"
+                         class="product-detail-image"
+                         th:src="${product.mainImageUrl}"
+                         th:alt="${product.productName}">
+                </div>
+            </div>
 
-        <div class="col-12 col-lg-6">
-            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-                <div>
-                    <h1 class="h2 mb-2" th:text="${product.productName}">Tên sản phẩm</h1>
-                    <p class="text-muted mb-0">
+            <div class="col-12 col-lg-6">
+                <div class="product-detail-info">
+                    <p class="product-detail-meta mb-2">
                         <span th:text="${product.brandName}">Thương hiệu</span>
                         <span> / </span>
                         <span th:text="${product.categoryName}">Danh mục</span>
                     </p>
+
+                    <h1 th:text="${product.productName}">Tên sản phẩm</h1>
+
+                    <p class="mb-3">
+                        <span class="badge product-gender-badge" th:text="${product.gender}">UNISEX</span>
+                    </p>
+
+                    <p class="product-detail-short" th:text="${product.shortDescription}">Mô tả ngắn</p>
+
+                    <p id="displayPrice" class="product-detail-price"
+                       th:text="${product.displayPrice != null ? #numbers.formatDecimal(product.displayPrice, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                        0 đ
+                    </p>
+
+                    <div class="product-selected-grid">
+                        <div>
+                            <span>Màu đang chọn</span>
+                            <strong id="selectedColor">Chưa chọn</strong>
+                        </div>
+                        <div>
+                            <span>Size đang chọn</span>
+                            <strong id="selectedSize">Chưa chọn</strong>
+                        </div>
+                        <div>
+                            <span>Tồn kho</span>
+                            <strong id="selectedStock">Chưa chọn</strong>
+                        </div>
+                        <div>
+                            <span>SKU</span>
+                            <strong id="selectedSku">Chưa chọn</strong>
+                        </div>
+                    </div>
+
+                    <section class="product-variant-section">
+                        <h2>Chọn màu / size</h2>
+                        <div th:if="${#lists.isEmpty(product.variants)}" class="alert alert-info">
+                            Sản phẩm hiện chưa có biến thể
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(product.variants)}">
+                            <button type="button"
+                                    class="btn btn-outline-dark product-variant-option"
+                                    th:each="variant, iterStat : ${product.variants}"
+                                    th:classappend="${iterStat.first} ? ' active'"
+                                    th:attr="data-variant-id=${variant.variantId},
+                                             data-image-url=${variant.imageUrl},
+                                             data-price=${variant.price != null ? #numbers.formatDecimal(variant.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'},
+                                             data-color=${variant.color},
+                                             data-size=${variant.size},
+                                             data-stock=${variant.stockQuantity},
+                                             data-sku=${variant.sku}"
+                                    th:text="${variant.color + ' / ' + variant.size}">
+                                Màu / Size
+                            </button>
+                        </div>
+                    </section>
+
+                    <form th:action="@{/cart/add}" method="post" class="product-add-cart-form">
+                        <input type="hidden" id="selectedVariantId" name="productVariantId">
+                        <div>
+                            <label for="quantity" class="form-label">Số lượng</label>
+                            <input type="number"
+                                   id="quantity"
+                                   name="quantity"
+                                   class="form-control"
+                                   min="1"
+                                   value="1"
+                                   th:disabled="${#lists.isEmpty(product.variants)}">
+                        </div>
+                        <button type="submit"
+                                id="addToCartButton"
+                                class="btn btn-primary btn-lg"
+                                th:disabled="${#lists.isEmpty(product.variants)}">
+                            Thêm vào giỏ hàng
+                        </button>
+                    </form>
                 </div>
-                <span class="badge text-bg-success" th:text="${product.status}">ACTIVE</span>
             </div>
-
-            <p class="mb-2">
-                <span class="badge text-bg-light border" th:text="${product.gender}">UNISEX</span>
-            </p>
-
-            <p class="lead" th:text="${product.shortDescription}">Mô tả ngắn</p>
-
-            <p id="displayPrice" class="fs-3 fw-semibold"
-               th:text="${product.displayPrice != null ? #numbers.formatDecimal(product.displayPrice, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
-                0 đ
-            </p>
-
-            <div class="row g-3 mb-4">
-                <div class="col-6">
-                    <div class="text-muted small">Màu đang chọn</div>
-                    <div id="selectedColor" class="fw-semibold">Chưa chọn</div>
-                </div>
-                <div class="col-6">
-                    <div class="text-muted small">Size đang chọn</div>
-                    <div id="selectedSize" class="fw-semibold">Chưa chọn</div>
-                </div>
-                <div class="col-6">
-                    <div class="text-muted small">Tồn kho</div>
-                    <div id="selectedStock" class="fw-semibold">Chưa chọn</div>
-                </div>
-                <div class="col-6">
-                    <div class="text-muted small">SKU</div>
-                    <div id="selectedSku" class="fw-semibold">Chưa chọn</div>
-                </div>
-            </div>
-
-            <section class="mb-4">
-                <h2 class="h5 mb-3">Biến thể sản phẩm</h2>
-                <div th:if="${#lists.isEmpty(product.variants)}" class="alert alert-info">
-                    Sản phẩm hiện chưa có biến thể
-                </div>
-
-                <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(product.variants)}">
-                    <button type="button"
-                            class="btn btn-outline-dark product-variant-option"
-                            th:each="variant, iterStat : ${product.variants}"
-                            th:classappend="${iterStat.first} ? ' active'"
-                            th:attr="data-variant-id=${variant.variantId},
-                                     data-image-url=${variant.imageUrl},
-                                     data-price=${variant.price != null ? #numbers.formatDecimal(variant.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'},
-                                     data-color=${variant.color},
-                                     data-size=${variant.size},
-                                     data-stock=${variant.stockQuantity},
-                                     data-sku=${variant.sku}"
-                            th:text="${variant.color + ' / ' + variant.size}">
-                        Màu / Size
-                    </button>
-                </div>
-            </section>
-
-            <form th:action="@{/cart/add}" method="post" class="d-flex flex-wrap align-items-end gap-3">
-                <input type="hidden" id="selectedVariantId" name="productVariantId">
-                <div>
-                    <label for="quantity" class="form-label">Số lượng</label>
-                    <input type="number"
-                           id="quantity"
-                           name="quantity"
-                           class="form-control"
-                           min="1"
-                           value="1"
-                           style="width: 120px;"
-                           th:disabled="${#lists.isEmpty(product.variants)}">
-                </div>
-                <button type="submit"
-                        id="addToCartButton"
-                        class="btn btn-primary btn-lg"
-                        th:disabled="${#lists.isEmpty(product.variants)}">
-                    Thêm vào giỏ hàng
-                </button>
-            </form>
         </div>
-    </div>
 
-    <section class="mt-5">
-        <h2 class="h4 mb-3">Mô tả chi tiết</h2>
-        <p class="product-description" th:text="${product.description}">Mô tả chi tiết</p>
+        <section class="product-description-section">
+            <h2>Mô tả chi tiết</h2>
+            <p class="product-description" th:text="${product.description}">Mô tả chi tiết</p>
+        </section>
+    </section>
+
+    <section class="container product-section suggested-section">
+        <div class="section-heading">
+            <div>
+                <h2>Sản phẩm gợi ý</h2>
+                <p>Có thể bạn cũng thích</p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(product.suggestedProducts)}" class="alert alert-info">
+            Chưa có sản phẩm gợi ý.
+        </div>
+
+        <div class="row g-4" th:if="${!#lists.isEmpty(product.suggestedProducts)}">
+            <div class="col-12 col-md-6 col-lg-3" th:each="suggested : ${product.suggestedProducts}">
+                <a class="product-card-link" th:href="@{/products/{id}(id=${suggested.productId})}">
+                    <article class="product-card">
+                        <div class="product-card-media">
+                            <img class="product-card-image" th:src="${suggested.imageUrl}" th:alt="${suggested.productName}">
+                        </div>
+                        <div class="product-card-body">
+                            <h3 th:text="${suggested.productName}">Tên sản phẩm</h3>
+                            <p>
+                                <span th:text="${suggested.brandName}">Brand</span>
+                                <span> / </span>
+                                <span th:text="${suggested.categoryName}">Category</span>
+                            </p>
+                            <strong th:text="${suggested.price != null ? #numbers.formatDecimal(suggested.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                                0 đ
+                            </strong>
+                        </div>
+                    </article>
+                </a>
+            </div>
+        </div>
     </section>
 </main>
 
+<footer th:replace="~{layout/footer :: userFooter}"></footer>
+
+<script th:src="@{/js/user/home.js}"></script>
 <script th:src="@{/js/user/product-detail.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
