@@ -101,7 +101,7 @@ public class CartService {
     }
 
     private CartResponse toCartResponse(Cart cart) {
-        List<CartItemResponse> items = cartItemRepository.findByCartId(cart.getId())
+        List<CartItemResponse> items = cartItemRepository.findByCartIdOrderByIdDesc(cart.getId())
                 .stream()
                 .map(this::toCartItemResponse)
                 .toList();

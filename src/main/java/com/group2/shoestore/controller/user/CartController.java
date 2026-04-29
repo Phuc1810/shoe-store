@@ -1,6 +1,7 @@
 package com.group2.shoestore.controller.user;
 
 import com.group2.shoestore.service.user.CartService;
+import com.group2.shoestore.service.user.HomeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class CartController {
 
     private final CartService cartService;
+    private final HomeService homeService;
 
     @GetMapping("/cart")
     public String cart(Model model) {
+        model.addAttribute("home", homeService.getHomeData());
         model.addAttribute("cart", cartService.getCurrentCart());
         return "user/cart";
     }
