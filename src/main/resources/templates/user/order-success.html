@@ -3,11 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Đặt hàng thành công</title>
+    <title>Đặt hàng thành công - Shoe Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
 </head>
-<body>
-<main>
-    <h1>Đặt hàng thành công</h1>
+<body class="home-page">
+<header th:replace="~{layout/header :: userHeader}"></header>
+
+<main class="order-page">
+    <section class="container order-shell">
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">
+            Thao tác thành công
+        </div>
+
+        <div class="order-result-card">
+            <div class="order-result-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <h1>Đặt hàng thành công</h1>
+            <p>Mã đơn hàng: <strong th:text="${order.orderCode}">ORD</strong></p>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a class="btn btn-primary" th:href="@{/products}">Tiếp tục mua sắm</a>
+                <a class="btn btn-outline-primary" th:href="@{/orders}">Xem đơn hàng của tôi</a>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-12 col-lg-5">
+                <section class="checkout-card h-100">
+                    <h2>Thông tin đơn hàng</h2>
+                    <dl class="order-info-list">
+                        <dt>Người nhận</dt>
+                        <dd th:text="${order.receiverName}">Tên người nhận</dd>
+                        <dt>Số điện thoại</dt>
+                        <dd th:text="${order.receiverPhone}">Số điện thoại</dd>
+                        <dt>Địa chỉ</dt>
+                        <dd th:text="${order.shippingAddress}">Địa chỉ</dd>
+                        <dt>Phương thức thanh toán</dt>
+                        <dd th:text="${order.paymentMethod}">COD</dd>
+                        <dt>Trạng thái thanh toán</dt>
+                        <dd th:text="${order.paymentStatus}">PENDING</dd>
+                        <dt>Trạng thái đơn hàng</dt>
+                        <dd th:text="${order.orderStatus}">CONFIRMED</dd>
+                        <dt>Tổng tiền</dt>
+                        <dd class="text-primary fw-bold"
+                            th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                            0 đ
+                        </dd>
+                    </dl>
+                </section>
+            </div>
+
+            <div class="col-12 col-lg-7">
+                <section class="checkout-card h-100">
+                    <h2>Sản phẩm đã đặt</h2>
+                    <div class="table-responsive">
+                        <table class="table align-middle cart-table">
+                            <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${order.items}">
+                                <td>
+                                    <div class="fw-semibold" th:text="${item.productName}">Tên sản phẩm</div>
+                                    <div class="small text-muted">
+                                        <span th:text="${item.color}">Màu</span>
+                                        <span> / </span>
+                                        <span th:text="${item.size}">Size</span>
+                                    </div>
+                                </td>
+                                <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'POINT', 0, 'COMMA') + ' đ'}">0 đ</td>
+                                <td th:text="${item.quantity}">1</td>
+                                <td class="fw-semibold"
+                                    th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                                    0 đ
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
 </main>
+
+<footer th:replace="~{layout/footer :: userFooter}"></footer>
+
+<script th:src="@{/js/user/home.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
