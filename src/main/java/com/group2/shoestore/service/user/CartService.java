@@ -68,6 +68,28 @@ public class CartService {
         cartItemRepository.save(cartItem);
     }
 
+    @Transactional
+    public void updateCartItem(Long cartItemId, Integer quantity) {
+        CartItem cartItem = getDemoUserCartItem(cartItemId);
+
+        if (quantity == null || quantity <= 0) {
+            deleteCartItem(cartItem);
+            return;
+        }
+
+        validateStock(cartItem.getProductVariant(), quantity);
+        cartItem.setQuantity(quantity);
+        cartItem.getCart().setUpdatedAt(LocalDateTime.now());
+        cartRepository.save(cartItem.getCart());
+        cartItemRepository.save(cartItem);
+    }
+
+    @Transactional
+    public void removeCartItem(Long cartItemId) {
+        CartItem cartItem = getDemoUserCartItem(cartItemId);
+        deleteCartItem(cartItem);
+    }
+
     @Transactional(readOnly = true)
     public CartResponse getCurrentCart() {
         return cartRepository.findByUserId(DEMO_USER_ID)
@@ -100,6 +122,25 @@ public class CartService {
         }
     }
 
+    private CartItem getDemoUserCartItem(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm trong giỏ hàng"));
+
+        Long cartUserId = cartItem.getCart().getUser().getId();
+        if (!DEMO_USER_ID.equals(cartUserId)) {
+            throw new ResourceNotFoundException("Không tìm thấy sản phẩm trong giỏ hàng");
+        }
+
+        return cartItem;
+    }
+
+    private void deleteCartItem(CartItem cartItem) {
+        Cart cart = cartItem.getCart();
+        cartItemRepository.delete(cartItem);
+        cart.setUpdatedAt(LocalDateTime.now());
+        cartRepository.save(cart);
+    }
+
     private CartResponse toCartResponse(Cart cart) {
         List<CartItemResponse> items = cartItemRepository.findByCartIdOrderByIdDesc(cart.getId())
                 .stream()
@@ -125,6 +166,7 @@ public class CartService {
         return CartItemResponse.builder()
                 .cartItemId(cartItem.getId())
                 .productVariantId(productVariant.getId())
+                .productId(productVariant.getProduct().getId())
                 .productName(productVariant.getProduct().getName())
                 .imageUrl(resolveImageUrl(productVariant))
                 .color(productVariant.getColor())
@@ -132,6 +174,7 @@ public class CartService {
                 .unitPrice(cartItem.getUnitPrice())
                 .quantity(cartItem.getQuantity())
                 .subtotal(subtotal)
+                .stockQuantity(productVariant.getStockQuantity())
                 .build();
     }
 

@@ -19,6 +19,8 @@ public class CartItemResponse {
 
     private Long productVariantId;
 
+    private Long productId;
+
     private String productName;
 
     private String imageUrl;
@@ -32,4 +34,6 @@ public class CartItemResponse {
     private Integer quantity;
 
     private BigDecimal subtotal;
+
+    private Integer stockQuantity;
 }

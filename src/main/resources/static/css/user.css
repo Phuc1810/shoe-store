@@ -248,6 +248,16 @@
     padding: 1.1rem 1.25rem;
 }
 
+.cart-quantity-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cart-quantity-form .form-control {
+    width: 86px;
+}
+
 .cart-summary-card {
     position: sticky;
     top: 96px;
