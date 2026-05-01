@@ -19,6 +19,7 @@ import com.group2.shoestore.repository.OrderRepository;
 import com.group2.shoestore.repository.ProductVariantRepository;
 import com.group2.shoestore.util.OrderCodeGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private static final Long DEMO_USER_ID = 2L;
@@ -38,6 +40,8 @@ public class OrderService {
     private static final String PAYMENT_STATUS_PAID = "PAID";
     private static final String ORDER_STATUS_PENDING_PAYMENT = "PENDING_PAYMENT";
     private static final String ORDER_STATUS_CONFIRMED = "CONFIRMED";
+    private static final String ORDER_STATUS_COMPLETED = "COMPLETED";
+    private static final String ORDER_STATUS_CANCELLED = "CANCELLED";
     private static final Set<String> VALID_PAYMENT_METHODS = Set.of(PAYMENT_METHOD_COD, PAYMENT_METHOD_BANK_QR);
     private static final String PLACEHOLDER_IMAGE_URL = "/images/logo.png";
 
@@ -120,7 +124,16 @@ public class OrderService {
                     .build();
             orderItemRepository.save(orderItem);
 
-            productVariant.setStockQuantity(productVariant.getStockQuantity() - cartItem.getQuantity());
+            int stockBefore = productVariant.getStockQuantity();
+            int stockAfter = stockBefore - cartItem.getQuantity();
+            log.debug(
+                    "Creating order: variantId={}, stockBefore={}, quantity={}, stockAfter={}",
+                    productVariant.getId(),
+                    stockBefore,
+                    cartItem.getQuantity(),
+                    stockAfter
+            );
+            productVariant.setStockQuantity(stockAfter);
             productVariantRepository.save(productVariant);
         }
 
@@ -139,21 +152,15 @@ public class OrderService {
                 .map(this::toOrderItemResponse)
                 .toList();
 
-        return OrderResponse.builder()
-                .orderId(order.getId())
-                .orderCode(order.getOrderCode())
-                .receiverName(order.getReceiverName())
-                .receiverPhone(order.getReceiverPhone())
-                .shippingAddress(order.getShippingAddress())
-                .note(order.getNote())
-                .totalAmount(order.getTotalAmount())
-                .finalAmount(order.getFinalAmount())
-                .paymentMethod(order.getPaymentMethod())
-                .paymentStatus(order.getPaymentStatus())
-                .orderStatus(order.getOrderStatus())
-                .createdAt(order.getCreatedAt())
-                .items(items)
-                .build();
+        return toOrderResponse(order, items);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getOrderHistory() {
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(DEMO_USER_ID)
+                .stream()
+                .map(order -> toOrderResponse(order, List.of()))
+                .toList();
     }
 
     @Transactional
@@ -263,6 +270,62 @@ public class OrderService {
                 .quantity(orderItem.getQuantity())
                 .subtotal(orderItem.getSubtotal())
                 .build();
+    }
+
+    private OrderResponse toOrderResponse(Order order, List<OrderItemResponse> items) {
+        return OrderResponse.builder()
+                .orderId(order.getId())
+                .orderCode(order.getOrderCode())
+                .receiverName(order.getReceiverName())
+                .receiverPhone(order.getReceiverPhone())
+                .shippingAddress(order.getShippingAddress())
+                .note(order.getNote())
+                .totalAmount(order.getTotalAmount())
+                .finalAmount(order.getFinalAmount())
+                .paymentMethod(order.getPaymentMethod())
+                .paymentStatus(order.getPaymentStatus())
+                .orderStatus(order.getOrderStatus())
+                .paymentStatusText(resolvePaymentStatusText(order.getPaymentStatus()))
+                .orderStatusText(resolveOrderStatusText(order.getOrderStatus()))
+                .paymentStatusBadgeClass(resolvePaymentStatusBadgeClass(order.getPaymentStatus()))
+                .orderStatusBadgeClass(resolveOrderStatusBadgeClass(order.getOrderStatus()))
+                .createdAt(order.getCreatedAt())
+                .items(items)
+                .build();
+    }
+
+    private String resolvePaymentStatusText(String paymentStatus) {
+        if (PAYMENT_STATUS_PAID.equals(paymentStatus)) {
+            return "Đã thanh toán";
+        }
+        return "Chờ thanh toán";
+    }
+
+    private String resolveOrderStatusText(String orderStatus) {
+        return switch (orderStatus) {
+            case ORDER_STATUS_PENDING_PAYMENT -> "Chờ thanh toán";
+            case ORDER_STATUS_CONFIRMED -> "Đã xác nhận";
+            case ORDER_STATUS_COMPLETED -> "Hoàn thành";
+            case ORDER_STATUS_CANCELLED -> "Đã hủy";
+            default -> orderStatus;
+        };
+    }
+
+    private String resolvePaymentStatusBadgeClass(String paymentStatus) {
+        if (PAYMENT_STATUS_PAID.equals(paymentStatus)) {
+            return "text-bg-success";
+        }
+        return "text-bg-warning";
+    }
+
+    private String resolveOrderStatusBadgeClass(String orderStatus) {
+        return switch (orderStatus) {
+            case ORDER_STATUS_PENDING_PAYMENT -> "text-bg-warning";
+            case ORDER_STATUS_CONFIRMED -> "text-bg-primary";
+            case ORDER_STATUS_COMPLETED -> "text-bg-success";
+            case ORDER_STATUS_CANCELLED -> "text-bg-danger";
+            default -> "text-bg-secondary";
+        };
     }
 
     private String resolveImageUrl(ProductVariant productVariant) {

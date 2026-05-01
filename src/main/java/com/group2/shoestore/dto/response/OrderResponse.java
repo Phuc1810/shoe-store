@@ -39,6 +39,14 @@ public class OrderResponse {
 
     private String orderStatus;
 
+    private String paymentStatusText;
+
+    private String orderStatusText;
+
+    private String paymentStatusBadgeClass;
+
+    private String orderStatusBadgeClass;
+
     private LocalDateTime createdAt;
 
     private List<OrderItemResponse> items;

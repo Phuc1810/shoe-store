@@ -22,6 +22,22 @@ public class OrderController {
     private final OrderService orderService;
     private final HomeService homeService;
 
+    @GetMapping("/orders")
+    public String orderHistory(Model model) {
+        model.addAttribute("home", homeService.getHomeData());
+        model.addAttribute("orders", orderService.getOrderHistory());
+        model.addAttribute("keyword", null);
+        return "user/order-history";
+    }
+
+    @GetMapping("/orders/{orderId}")
+    public String orderDetail(@PathVariable Long orderId, Model model) {
+        model.addAttribute("home", homeService.getHomeData());
+        model.addAttribute("order", orderService.getOrderResponse(orderId));
+        model.addAttribute("keyword", null);
+        return "user/order-detail";
+    }
+
     @GetMapping("/checkout")
     public String checkout(Model model, RedirectAttributes redirectAttributes) {
         try {
