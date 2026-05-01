@@ -179,6 +179,34 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        Order order = getDemoUserOrder(orderId);
+        if (!isCancellableStatus(order.getOrderStatus())) {
+            throw new BadRequestException("Không thể hủy đơn này");
+        }
+
+        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+        for (OrderItem orderItem : orderItems) {
+            ProductVariant productVariant = orderItem.getProductVariant();
+            int currentStock = productVariant.getStockQuantity() == null ? 0 : productVariant.getStockQuantity();
+            int restoredStock = currentStock + orderItem.getQuantity();
+            log.debug(
+                    "Cancelling order: variantId={}, stockBefore={}, quantity={}, stockAfter={}",
+                    productVariant.getId(),
+                    currentStock,
+                    orderItem.getQuantity(),
+                    restoredStock
+            );
+            productVariant.setStockQuantity(restoredStock);
+            productVariantRepository.save(productVariant);
+        }
+
+        order.setOrderStatus(ORDER_STATUS_CANCELLED);
+        order.setUpdatedAt(LocalDateTime.now());
+        orderRepository.save(order);
+    }
+
     @Transactional(readOnly = true)
     public void validateBankQrPaymentPage(Long orderId) {
         Order order = getDemoUserOrder(orderId);
@@ -235,6 +263,10 @@ public class OrderService {
         return ORDER_STATUS_CONFIRMED;
     }
 
+    private boolean isCancellableStatus(String orderStatus) {
+        return ORDER_STATUS_PENDING_PAYMENT.equals(orderStatus) || ORDER_STATUS_CONFIRMED.equals(orderStatus);
+    }
+
     private String normalizeBlank(String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -289,6 +321,7 @@ public class OrderService {
                 .orderStatusText(resolveOrderStatusText(order.getOrderStatus()))
                 .paymentStatusBadgeClass(resolvePaymentStatusBadgeClass(order.getPaymentStatus()))
                 .orderStatusBadgeClass(resolveOrderStatusBadgeClass(order.getOrderStatus()))
+                .cancellable(isCancellableStatus(order.getOrderStatus()))
                 .createdAt(order.getCreatedAt())
                 .items(items)
                 .build();

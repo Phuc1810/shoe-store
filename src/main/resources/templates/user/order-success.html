@@ -44,9 +44,21 @@
                         <dt>Phương thức thanh toán</dt>
                         <dd th:text="${order.paymentMethod}">COD</dd>
                         <dt>Trạng thái thanh toán</dt>
-                        <dd th:text="${order.paymentStatus}">PENDING</dd>
+                        <dd>
+                            <span class="badge status-badge"
+                                  th:classappend="${' ' + order.paymentStatusBadgeClass}"
+                                  th:text="${order.paymentStatusText}">
+                                Chờ thanh toán
+                            </span>
+                        </dd>
                         <dt>Trạng thái đơn hàng</dt>
-                        <dd th:text="${order.orderStatus}">CONFIRMED</dd>
+                        <dd>
+                            <span class="badge status-badge"
+                                  th:classappend="${' ' + order.orderStatusBadgeClass}"
+                                  th:text="${order.orderStatusText}">
+                                Đã xác nhận
+                            </span>
+                        </dd>
                         <dt>Tổng tiền</dt>
                         <dd class="text-primary fw-bold"
                             th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">

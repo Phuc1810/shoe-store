@@ -14,6 +14,13 @@
 
 <main class="order-page">
     <section class="container order-shell">
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">
+            Thao tác thành công
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+            Có lỗi xảy ra
+        </div>
+
         <div class="section-heading">
             <div>
                 <h1>Chi tiết đơn hàng</h1>
@@ -23,6 +30,13 @@
                 </p>
             </div>
             <div class="d-flex flex-wrap gap-2">
+                <form th:if="${order.cancellable}"
+                      th:action="@{/orders/{id}/cancel(id=${order.orderId})}"
+                      method="post"
+                      onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+                    <input type="hidden" name="returnUrl" th:value="@{/orders/{id}(id=${order.orderId})}">
+                    <button type="submit" class="btn btn-outline-danger">Hủy đơn</button>
+                </form>
                 <a class="btn btn-outline-primary" th:href="@{/orders}">Quay lại đơn hàng của tôi</a>
                 <a class="btn btn-primary" th:href="@{/products}">Tiếp tục mua sắm</a>
             </div>

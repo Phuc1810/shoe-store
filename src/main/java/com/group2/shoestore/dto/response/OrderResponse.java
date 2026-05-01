@@ -47,6 +47,8 @@ public class OrderResponse {
 
     private String orderStatusBadgeClass;
 
+    private boolean cancellable;
+
     private LocalDateTime createdAt;
 
     private List<OrderItemResponse> items;

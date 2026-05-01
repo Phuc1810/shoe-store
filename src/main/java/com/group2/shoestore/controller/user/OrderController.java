@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -102,5 +103,18 @@ public class OrderController {
             redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
             return "redirect:/orders/" + orderId + "/payment";
         }
+    }
+
+    @PostMapping("/orders/{orderId}/cancel")
+    public String cancelOrder(@PathVariable Long orderId,
+                              @RequestParam(defaultValue = "/orders") String returnUrl,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            orderService.cancelOrder(orderId);
+            redirectAttributes.addFlashAttribute("successMessage", "Hủy đơn hàng thành công");
+        } catch (BadRequestException | ResourceNotFoundException exception) {
+            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
+        }
+        return "redirect:" + returnUrl;
     }
 }
