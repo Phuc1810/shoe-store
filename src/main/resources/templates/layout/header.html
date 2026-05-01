@@ -87,10 +87,14 @@
                     <a class="btn home-icon-button" th:href="@{/cart}" aria-label="Giỏ hàng">
                         <i class="bi bi-cart3"></i>
                     </a>
-                    <div class="dropdown">
-                        <button class="btn home-icon-button dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản">
+
+                    <div class="dropdown home-account-menu">
+                        <a class="btn home-icon-button" th:href="@{/profile}" aria-label="Thông tin cá nhân">
                             <i class="bi bi-person"></i>
+                        </a>
+                        <button class="btn home-icon-button home-account-toggle dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản">
+                            <i class="bi bi-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" th:href="@{/profile}">Thông tin cá nhân</a></li>

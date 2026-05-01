@@ -681,6 +681,22 @@
     background-color: #eff6ff;
 }
 
+.home-account-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.home-account-toggle {
+    width: 34px;
+    height: 42px;
+    padding: 0;
+}
+
+.home-account-toggle::after {
+    display: none;
+}
+
 .hero-section {
     background-color: #ffffff;
 }
@@ -935,6 +951,79 @@
     font-size: 0.92rem;
 }
 
+.profile-card {
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    background-color: #ffffff;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
+}
+
+.profile-avatar-panel {
+    height: 100%;
+    padding: 2rem;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 108px;
+    height: 108px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    border-radius: 999px;
+    color: #2563eb;
+    background-color: #ffffff;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.14);
+    font-size: 3.5rem;
+}
+
+.profile-avatar-panel h2 {
+    margin-bottom: 0.35rem;
+    color: #111827;
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+.profile-avatar-panel p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.profile-info-item {
+    padding: 1rem 1.1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background-color: #f8fafc;
+}
+
+.profile-info-item span {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #6b7280;
+    font-size: 0.88rem;
+}
+
+.profile-info-item strong {
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.profile-info-item-full {
+    grid-column: 1 / -1;
+}
+
 @media (max-width: 991.98px) {
     .home-header,
     .home-header .navbar,
@@ -955,6 +1044,10 @@
         align-items: stretch;
         margin: 1rem 0 0;
         flex-wrap: wrap;
+    }
+
+    .home-account-menu {
+        justify-content: flex-end;
     }
 
     .home-search {
@@ -1063,6 +1156,15 @@
     }
 
     .product-selected-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-card,
+    .profile-avatar-panel {
+        padding: 1.25rem;
+    }
+
+    .profile-info-grid {
         grid-template-columns: 1fr;
     }
 }
