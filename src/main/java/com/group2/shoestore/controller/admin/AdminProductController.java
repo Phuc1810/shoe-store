@@ -56,11 +56,11 @@ public class AdminProductController {
             model.addAttribute("brandId", brandId);
             model.addAttribute("status", status);
 
-            return "admin/products";
+            return "admin/product/list";
         } catch (Exception e) {
             log.error("Error listing products", e);
             model.addAttribute("error", "Có lỗi khi tải danh sách sản phẩm");
-            return "admin/products";
+            return "admin/product/list";
         }
     }
 
@@ -77,7 +77,7 @@ public class AdminProductController {
             model.addAttribute("statuses", new String[]{"ACTIVE", "INACTIVE"});
             model.addAttribute("isEdit", false);
 
-            return "admin/product-form";
+            return "admin/product/form";
         } catch (Exception e) {
             log.error("Error showing add form", e);
             return "redirect:/admin/products";
@@ -102,7 +102,7 @@ public class AdminProductController {
             model.addAttribute("genders", new String[]{"MEN", "WOMEN", "UNISEX", "KIDS"});
             model.addAttribute("statuses", new String[]{"ACTIVE", "INACTIVE"});
             model.addAttribute("isEdit", false);
-            return "admin/product-form";
+            return "admin/product/form";
         }
 
         try {
@@ -144,7 +144,7 @@ public class AdminProductController {
             model.addAttribute("statuses", new String[]{"ACTIVE", "INACTIVE"});
             model.addAttribute("isEdit", true);
 
-            return "admin/product-form";
+            return "admin/product/form";
         } catch (Exception e) {
             log.error("Error showing edit form", e);
             return "redirect:/admin/products";
@@ -162,7 +162,7 @@ public class AdminProductController {
 
         log.info("Updating product with id: {}", id);
 
-        // Kiểm tra validation
+
         if (bindingResult.hasErrors()) {
             log.warn("Validation failed for product update");
             model.addAttribute("productId", id);
@@ -171,7 +171,7 @@ public class AdminProductController {
             model.addAttribute("genders", new String[]{"MEN", "WOMEN", "UNISEX", "KIDS"});
             model.addAttribute("statuses", new String[]{"ACTIVE", "INACTIVE"});
             model.addAttribute("isEdit", true);
-            return "admin/product-form";
+            return "admin/product/form";
         }
 
         try {
@@ -187,8 +187,9 @@ public class AdminProductController {
         }
     }
 
-
-    @DeleteMapping("/{id}")
+    //@DeleteMapping("/{id}")
+    //@PostMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         log.info("Deleting product with id: {}", id);
 
@@ -202,6 +203,7 @@ public class AdminProductController {
             redirectAttributes.addFlashAttribute("alertType", "danger");
         }
 
+
         return "redirect:/admin/products";
     }
 
@@ -213,7 +215,7 @@ public class AdminProductController {
         try {
             ProductResponse product = adminProductService.getProductById(id);
             model.addAttribute("product", product);
-            return "admin/product-detail";
+            return "admin/product/detail";
         } catch (Exception e) {
             log.error("Error viewing product detail", e);
             return "redirect:/admin/products";

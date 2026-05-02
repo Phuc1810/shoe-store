@@ -29,16 +29,36 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final BrandRepository brandRepository;
 
 
+    // @Override
+//    @Transactional(readOnly = true)
+//    public Page<ProductListItemResponse> search(String name, Long categoryId, Long brandId, String status, Pageable pageable) {
+//        log.info("Searching products: name={}, categoryId={}, brandId={}, status={}", name, categoryId, brandId, status);
+//
+//        Page<Product> products = productRepository.search(name, categoryId, brandId, status, pageable);
+//
+//        return products.map(this::convertToListItemResponse);
+//    }
+
     @Override
     @Transactional(readOnly = true)
     public Page<ProductListItemResponse> search(String name, Long categoryId, Long brandId, String status, Pageable pageable) {
         log.info("Searching products: name={}, categoryId={}, brandId={}, status={}", name, categoryId, brandId, status);
 
-        Page<Product> products = productRepository.search(name, categoryId, brandId, status, pageable);
+        // 1. Xử lý name: Nếu có giá trị thì bọc %, nếu rỗng/null thì để null hoàn toàn
+        String searchName = (name != null && !name.trim().isEmpty()) ? "%" + name.trim() + "%" : null;
+
+        // 2. Xử lý status: Nếu là chuỗi rỗng "" thì chuyển về null để SQL nhận diện được
+        String searchStatus = (status != null && !status.trim().isEmpty()) ? status : null;
+
+        // 3. Xử lý ID: Đảm bảo nếu ID <= 0 (thường là giá trị mặc định của thẻ select) thì coi như null
+        Long searchCategoryId = (categoryId != null && categoryId > 0) ? categoryId : null;
+        Long searchBrandId = (brandId != null && brandId > 0) ? brandId : null;
+
+        // Truyền các biến đã được xử lý (searchName, searchStatus,...) vào repository
+        Page<Product> products = productRepository.search(searchName, searchCategoryId, searchBrandId, searchStatus, pageable);
 
         return products.map(this::convertToListItemResponse);
     }
-
 
     @Override
     @Transactional(readOnly = true)
