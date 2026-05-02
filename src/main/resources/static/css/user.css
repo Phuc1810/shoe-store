@@ -697,6 +697,10 @@
     display: none;
 }
 
+.login-card {
+    padding: 2rem;
+}
+
 .hero-section {
     background-color: #ffffff;
 }

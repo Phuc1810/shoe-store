@@ -11,7 +11,7 @@ import com.group2.shoestore.exception.ResourceNotFoundException;
 import com.group2.shoestore.repository.CartItemRepository;
 import com.group2.shoestore.repository.CartRepository;
 import com.group2.shoestore.repository.ProductVariantRepository;
-import com.group2.shoestore.repository.UserRepository;
+import com.group2.shoestore.security.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +24,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartService {
 
-    private static final Long DEMO_USER_ID = 2L;
     private static final String ACTIVE_STATUS = "ACTIVE";
     private static final String PLACEHOLDER_IMAGE_URL = "/images/logo.png";
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductVariantRepository productVariantRepository;
-    private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
     @Transactional
     public void addToCart(Long productVariantId, Integer quantity) {
@@ -44,8 +43,7 @@ public class CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy biến thể sản phẩm"));
 
         Cart cart = getOrCreateCart();
-        CartItem cartItem = cartItemRepository
-                .findByCartIdAndProductVariantId(cart.getId(), productVariantId)
+        CartItem cartItem = cartItemRepository.findByCartIdAndProductVariantId(cart.getId(), productVariantId)
                 .orElse(null);
 
         int currentQuantity = cartItem == null ? 0 : cartItem.getQuantity();
@@ -70,7 +68,7 @@ public class CartService {
 
     @Transactional
     public void updateCartItem(Long cartItemId, Integer quantity) {
-        CartItem cartItem = getDemoUserCartItem(cartItemId);
+        CartItem cartItem = getCurrentUserCartItem(cartItemId);
 
         if (quantity == null || quantity <= 0) {
             deleteCartItem(cartItem);
@@ -86,13 +84,14 @@ public class CartService {
 
     @Transactional
     public void removeCartItem(Long cartItemId) {
-        CartItem cartItem = getDemoUserCartItem(cartItemId);
+        CartItem cartItem = getCurrentUserCartItem(cartItemId);
         deleteCartItem(cartItem);
     }
 
     @Transactional(readOnly = true)
     public CartResponse getCurrentCart() {
-        return cartRepository.findByUserId(DEMO_USER_ID)
+        Long currentUserId = currentUserService.getCurrentUserId();
+        return cartRepository.findByUserId(currentUserId)
                 .map(this::toCartResponse)
                 .orElseGet(() -> CartResponse.builder()
                         .items(List.of())
@@ -101,10 +100,10 @@ public class CartService {
     }
 
     private Cart getOrCreateCart() {
-        return cartRepository.findByUserId(DEMO_USER_ID)
+        Long currentUserId = currentUserService.getCurrentUserId();
+        return cartRepository.findByUserId(currentUserId)
                 .orElseGet(() -> {
-                    User user = userRepository.findById(DEMO_USER_ID)
-                            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user demo"));
+                    User user = currentUserService.getCurrentUser();
                     LocalDateTime now = LocalDateTime.now();
                     Cart cart = Cart.builder()
                             .user(user)
@@ -122,12 +121,12 @@ public class CartService {
         }
     }
 
-    private CartItem getDemoUserCartItem(Long cartItemId) {
+    private CartItem getCurrentUserCartItem(Long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm trong giỏ hàng"));
 
         Long cartUserId = cartItem.getCart().getUser().getId();
-        if (!DEMO_USER_ID.equals(cartUserId)) {
+        if (!currentUserService.getCurrentUserId().equals(cartUserId)) {
             throw new ResourceNotFoundException("Không tìm thấy sản phẩm trong giỏ hàng");
         }
 
@@ -160,8 +159,7 @@ public class CartService {
 
     private CartItemResponse toCartItemResponse(CartItem cartItem) {
         ProductVariant productVariant = cartItem.getProductVariant();
-        BigDecimal subtotal = cartItem.getUnitPrice()
-                .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+        BigDecimal subtotal = cartItem.getUnitPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 
         return CartItemResponse.builder()
                 .cartItemId(cartItem.getId())

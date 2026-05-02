@@ -17,6 +17,7 @@ import com.group2.shoestore.repository.CartRepository;
 import com.group2.shoestore.repository.OrderItemRepository;
 import com.group2.shoestore.repository.OrderRepository;
 import com.group2.shoestore.repository.ProductVariantRepository;
+import com.group2.shoestore.security.CurrentUserService;
 import com.group2.shoestore.util.OrderCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,6 @@ import java.util.Set;
 @Slf4j
 public class OrderService {
 
-    private static final Long DEMO_USER_ID = 2L;
     private static final String PAYMENT_METHOD_COD = "COD";
     private static final String PAYMENT_METHOD_BANK_QR = "BANK_QR";
     private static final String PAYMENT_STATUS_PENDING = "PENDING";
@@ -50,10 +50,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductVariantRepository productVariantRepository;
+    private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
     public CartResponse getCheckoutCart() {
-        Cart cart = getDemoUserCart();
+        Cart cart = getCurrentUserCart();
         List<CartItem> cartItems = cartItemRepository.findByCartIdOrderByIdDesc(cart.getId());
         if (cartItems.isEmpty()) {
             throw new BadRequestException("Giỏ hàng đang trống");
@@ -78,7 +79,7 @@ public class OrderService {
     public OrderResponse createOrder(CheckoutRequest request) {
         validateCheckoutRequest(request);
 
-        Cart cart = getDemoUserCart();
+        Cart cart = getCurrentUserCart();
         List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
         if (cartItems.isEmpty()) {
             throw new BadRequestException("Giỏ hàng đang trống");
@@ -92,7 +93,7 @@ public class OrderService {
 
         LocalDateTime now = LocalDateTime.now();
         Order order = Order.builder()
-                .user(cart.getUser())
+                .user(currentUserService.getCurrentUser())
                 .orderCode(OrderCodeGenerator.generate())
                 .receiverName(request.getReceiverName().trim())
                 .receiverPhone(request.getReceiverPhone().trim())
@@ -146,7 +147,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public OrderResponse getOrderResponse(Long orderId) {
-        Order order = getDemoUserOrder(orderId);
+        Order order = getCurrentUserOrder(orderId);
         List<OrderItemResponse> items = orderItemRepository.findByOrderId(orderId)
                 .stream()
                 .map(this::toOrderItemResponse)
@@ -157,7 +158,8 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrderHistory() {
-        return orderRepository.findByUserIdOrderByCreatedAtDesc(DEMO_USER_ID)
+        Long currentUserId = currentUserService.getCurrentUserId();
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(currentUserId)
                 .stream()
                 .map(order -> toOrderResponse(order, List.of()))
                 .toList();
@@ -165,7 +167,7 @@ public class OrderService {
 
     @Transactional
     public void confirmBankQrPayment(Long orderId) {
-        Order order = getDemoUserOrder(orderId);
+        Order order = getCurrentUserOrder(orderId);
         if (!PAYMENT_METHOD_BANK_QR.equals(order.getPaymentMethod())) {
             throw new BadRequestException("Đơn hàng không dùng phương thức thanh toán QR");
         }
@@ -181,7 +183,7 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(Long orderId) {
-        Order order = getDemoUserOrder(orderId);
+        Order order = getCurrentUserOrder(orderId);
         if (!isCancellableStatus(order.getOrderStatus())) {
             throw new BadRequestException("Không thể hủy đơn này");
         }
@@ -209,22 +211,26 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public void validateBankQrPaymentPage(Long orderId) {
-        Order order = getDemoUserOrder(orderId);
+        Order order = getCurrentUserOrder(orderId);
         if (!PAYMENT_METHOD_BANK_QR.equals(order.getPaymentMethod())) {
             throw new BadRequestException("Đơn hàng không dùng phương thức thanh toán QR");
         }
+        if (!ORDER_STATUS_PENDING_PAYMENT.equals(order.getOrderStatus())) {
+            throw new BadRequestException("Đơn hàng không còn ở trạng thái chờ thanh toán");
+        }
     }
 
-    private Cart getDemoUserCart() {
-        return cartRepository.findByUserId(DEMO_USER_ID)
+    private Cart getCurrentUserCart() {
+        Long currentUserId = currentUserService.getCurrentUserId();
+        return cartRepository.findByUserId(currentUserId)
                 .orElseThrow(() -> new BadRequestException("Giỏ hàng đang trống"));
     }
 
-    private Order getDemoUserOrder(Long orderId) {
+    private Order getCurrentUserOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 
-        if (!DEMO_USER_ID.equals(order.getUser().getId())) {
+        if (!currentUserService.getCurrentUserId().equals(order.getUser().getId())) {
             throw new ResourceNotFoundException("Không tìm thấy đơn hàng");
         }
         return order;

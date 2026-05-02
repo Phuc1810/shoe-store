@@ -28,8 +28,14 @@ public class CartController {
 
     @PostMapping("/cart/add")
     public String addToCart(@RequestParam Long productVariantId,
-                            @RequestParam Integer quantity) {
-        cartService.addToCart(productVariantId, quantity);
+                            @RequestParam Integer quantity,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            cartService.addToCart(productVariantId, quantity);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm vào giỏ hàng thành công");
+        } catch (BadRequestException | ResourceNotFoundException exception) {
+            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
+        }
         return "redirect:/cart";
     }
 

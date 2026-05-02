@@ -70,6 +70,7 @@
                                 <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'POINT', 0, 'COMMA') + ' đ'}">0 đ</td>
                                 <td>
                                     <form class="cart-quantity-form" th:action="@{/cart/update}" method="post">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                         <input type="hidden" name="cartItemId" th:value="${item.cartItemId}">
                                         <input type="number"
                                                class="form-control"
@@ -91,6 +92,7 @@
                                 </td>
                                 <td>
                                     <form th:action="@{/cart/remove}" method="post">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                         <input type="hidden" name="cartItemId" th:value="${item.cartItemId}">
                                         <button type="submit" class="btn btn-outline-danger btn-sm">
                                             Xóa

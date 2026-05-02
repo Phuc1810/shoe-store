@@ -2,8 +2,7 @@ package com.group2.shoestore.service.user;
 
 import com.group2.shoestore.dto.response.UserProfileResponse;
 import com.group2.shoestore.entity.User;
-import com.group2.shoestore.exception.ResourceNotFoundException;
-import com.group2.shoestore.repository.UserRepository;
+import com.group2.shoestore.security.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,14 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private static final Long DEMO_USER_ID = 2L;
-
-    private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
-    public UserProfileResponse getDemoUserProfile() {
-        User user = userRepository.findById(DEMO_USER_ID)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin người dùng"));
+    public UserProfileResponse getCurrentUserProfile() {
+        User user = currentUserService.getCurrentUser();
 
         return UserProfileResponse.builder()
                 .userId(user.getId())
@@ -28,8 +24,18 @@ public class ProfileService {
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .roleName(user.getRole() != null ? user.getRole().getName() : null)
-                .status(user.getStatus())
+                .status(resolveStatusText(user.getStatus()))
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    private String resolveStatusText(String status) {
+        if ("ACTIVE".equalsIgnoreCase(status)) {
+            return "Đang hoạt động";
+        }
+        if ("INACTIVE".equalsIgnoreCase(status)) {
+            return "Ngưng hoạt động";
+        }
+        return status;
     }
 }

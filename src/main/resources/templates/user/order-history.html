@@ -79,6 +79,7 @@
                                       th:action="@{/orders/{id}/cancel(id=${order.orderId})}"
                                       method="post"
                                       onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="returnUrl" value="/orders">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Hủy đơn</button>
                                 </form>

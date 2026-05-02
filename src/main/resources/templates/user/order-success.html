@@ -14,6 +14,10 @@
 
 <main class="order-page">
     <section class="container order-shell">
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+            Có lỗi xảy ra
+        </div>
+
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">
             Thao tác thành công
         </div>

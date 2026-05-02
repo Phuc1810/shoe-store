@@ -27,6 +27,7 @@
         </div>
 
         <form th:action="@{/checkout}" method="post" class="row g-4 align-items-start">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <div class="col-12 col-lg-7">
                 <section class="checkout-card">
                     <h2>Thông tin nhận hàng</h2>

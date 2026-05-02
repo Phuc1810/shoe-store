@@ -89,6 +89,7 @@
                     </section>
 
                     <form th:action="@{/cart/add}" method="post" class="product-add-cart-form">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                         <input type="hidden" id="selectedVariantId" name="productVariantId">
                         <div>
                             <label for="quantity" class="form-label">Số lượng</label>

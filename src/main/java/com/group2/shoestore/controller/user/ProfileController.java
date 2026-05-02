@@ -21,7 +21,7 @@ public class ProfileController {
         try {
             model.addAttribute("home", homeService.getHomeData());
             model.addAttribute("keyword", null);
-            model.addAttribute("profile", profileService.getDemoUserProfile());
+            model.addAttribute("profile", profileService.getCurrentUserProfile());
             return "user/profile";
         } catch (ResourceNotFoundException exception) {
             redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
