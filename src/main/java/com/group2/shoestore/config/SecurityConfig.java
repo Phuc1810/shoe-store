@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 "/register",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").permitAll()
                         .requestMatchers(
                                 "/cart",
                                 "/cart/**",

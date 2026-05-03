@@ -21,7 +21,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h2><i class="bi bi-shoe"></i> Quản lý sản phẩm</h2>
+                        <h2><i class="bi bi-shoe"></i> Quản lý Sản phẩm</h2>
                         <a href="/admin/products/add" class="btn btn-primary">
                             <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
                         </a>
@@ -30,7 +30,7 @@
             </div>
 
             <!-- Alert Messages -->
-            <div th:if="${message}" class="alert alert-dismissible fade show"
+            <div th:if="${message}" class="alert alert-dismissible fade show" 
                  th:classappend="'alert-' + ${alertType}" role="alert">
                 <span th:text="${message}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -44,14 +44,14 @@
                 <div class="card-body">
                     <form method="get" th:action="@{/admin/products}" class="row g-3">
                         <div class="col-md-3">
-                            <input type="text" name="name" class="form-control"
+                            <input type="text" name="name" class="form-control" 
                                    placeholder="Tên sản phẩm..." th:value="${name}">
                         </div>
                         <div class="col-md-3">
                             <select name="categoryId" class="form-select">
                                 <option value="">-- Chọn danh mục --</option>
-                                <option th:each="cat : ${categories}"
-                                        th:value="${cat.id}"
+                                <option th:each="cat : ${categories}" 
+                                        th:value="${cat.id}" 
                                         th:text="${cat.name}"
                                         th:selected="${categoryId == cat.id}"></option>
                             </select>
@@ -59,8 +59,8 @@
                         <div class="col-md-3">
                             <select name="brandId" class="form-select">
                                 <option value="">-- Chọn thương hiệu --</option>
-                                <option th:each="brand : ${brands}"
-                                        th:value="${brand.id}"
+                                <option th:each="brand : ${brands}" 
+                                        th:value="${brand.id}" 
                                         th:text="${brand.name}"
                                         th:selected="${brandId == brand.id}"></option>
                             </select>
@@ -85,7 +85,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        Danh sách sản phẩm
+                        Danh sách sản phẩm 
                         <span class="badge bg-info" th:text="'Tổng: ' + ${products.totalElements}"></span>
                     </h5>
                 </div>
@@ -93,53 +93,53 @@
                     <div th:if="${products.isEmpty()}" class="p-4 text-center">
                         <p class="text-muted">Không có sản phẩm nào.</p>
                     </div>
-
+                    
                     <table th:unless="${products.isEmpty()}" class="table table-hover mb-0">
                         <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Danh mục</th>
-                            <th>Thương hiệu</th>
-                            <th>Giá</th>
-                            <th>Trạng thái</th>
-                            <th class="text-center">Hành động</th>
-                        </tr>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Danh mục</th>
+                                <th>Thương hiệu</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="product, iterStat : ${products.content}">
-                            <td th:text="${(products.number * products.size) + iterStat.count}"></td>
-                            <td>
-                                <strong th:text="${product.name}"></strong>
-                            </td>
-                            <td th:text="${product.categoryName}"></td>
-                            <td th:text="${product.brandName ?: 'N/A'}"></td>
-                            <td>
-                                <span class="badge bg-success" th:text="${#numbers.formatDecimal(product.basePrice, 1, 2)}"></span>
-                            </td>
-                            <td>
-                                    <span class="badge"
+                            <tr th:each="product, iterStat : ${products.content}">
+                                <td th:text="${(products.number * products.size) + iterStat.count}"></td>
+                                <td>
+                                    <strong th:text="${product.name}"></strong>
+                                </td>
+                                <td th:text="${product.categoryName}"></td>
+                                <td th:text="${product.brandName ?: 'N/A'}"></td>
+                                <td>
+                                    <span class="badge bg-success" th:text="${#numbers.formatDecimal(product.basePrice, 1, 2)}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge" 
                                           th:classappend="${product.status == 'ACTIVE' ? 'bg-success' : 'bg-danger'}"
                                           th:text="${product.status == 'ACTIVE' ? 'Hoạt động' : 'Vô hiệu hóa'}">
                                     </span>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a th:href="@{/admin/products/{id}/edit(id=${product.id})}"
-                                       class="btn btn-warning" title="Sửa">
-                                        <i class="bi bi-pencil"></i> Sửa
-                                    </a>
-                                    <a th:href="@{/admin/products/{id}(id=${product.id})}"
-                                       class="btn btn-info" title="Chi tiết">
-                                        <i class="bi bi-eye"></i> Xem
-                                    </a>
-                                    <button type="button" class="btn btn-danger" title="Xóa"
-                                            th:onclick="confirmDelete([[${product.id}]])">
-                                        <i class="bi bi-trash"></i> Xóa
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" 
+                                           class="btn btn-warning" title="Sửa">
+                                            <i class="bi bi-pencil"></i> Sửa
+                                        </a>
+                                        <a th:href="@{/admin/products/{id}(id=${product.id})}" 
+                                           class="btn btn-info" title="Chi tiết">
+                                            <i class="bi bi-eye"></i> Xem
+                                        </a>
+                                        <button type="button" class="btn btn-danger" title="Xóa"
+                                                onclick="confirmDelete([[${product.id}]])">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -155,10 +155,10 @@
                     </li>
 
                     <!-- Page Numbers -->
-                    <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
-                        class="page-item"
+                    <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}" 
+                        class="page-item" 
                         th:classappend="${i == products.number ? 'active' : ''}">
-                        <a class="page-link"
+                        <a class="page-link" 
                            th:href="@{/admin/products(page=${i},name=${name},categoryId=${categoryId},brandId=${brandId},status=${status})}"
                            th:text="${i + 1}"></a>
                     </li>
@@ -188,7 +188,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                 <form id="deleteForm" method="post" action="" style="display: inline;">
-<!--                    <input type="hidden" name="_method" value="DELETE">-->
+                    <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -204,8 +204,7 @@
     function confirmDelete(productId) {
         const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
         const deleteForm = document.getElementById('deleteForm');
-        //deleteForm.action = '/admin/products/' + productId;
-        deleteForm.action = '/admin/products/' + productId + '/delete';
+        deleteForm.action = '/admin/products/' + productId;
         modal.show();
     }
 </script>

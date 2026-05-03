@@ -2,12 +2,263 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chi tiết đơn hàng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Đơn Hàng - Hệ Thống Quản Lý Cửa Hàng Giày</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <style>
+        .status-badge {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-confirmed {
+            background-color: #e7f5ff;
+            color: #1971c2;
+        }
+        .status-shipping {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-delivered {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .info-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        .info-value {
+            color: #212529;
+        }
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .amount-row.total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #155724;
+        }
+        .sidebar-section {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .sidebar-section h5 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #0d6efd;
+        }
+    </style>
 </head>
 <body>
-<main>
-    <h1>Chi tiết đơn hàng</h1>
-</main>
+<div th:replace="~{layout/admin-layout :: navbar}"></div>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+        <div class="col-md-10">
+            <!-- Thông báo -->
+            <div th:if="${message}" th:class="'alert alert-' + ${alertType ?: 'info'} + ' alert-dismissible fade show'" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Chi Tiết Đơn Hàng</h1>
+                <a href="/admin/orders" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay Lại
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-md-8">
+                    <!-- Thông Tin Cơ Bản -->
+                    <div class="info-box">
+                        <h4 class="mb-3">Thông Tin Đơn Hàng</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Mã Đơn Hàng:</div>
+                                <div class="info-value" th:text="${order.orderCode}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Ngày Tạo:</div>
+                                <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></span>                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Trạng Thái:</div>
+                                <div class="info-value">
+                                    <span th:class="'status-badge status-' + ${#strings.toLowerCase(order.orderStatus)}"
+                                          th:text="${order.orderStatus}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Phương Thức Thanh Toán:</div>
+                                <div class="info-value" th:text="${order.paymentMethod}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Tình Trạng Thanh Toán:</div>
+                                <div class="info-value" th:text="${order.paymentStatus}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Ghi Chú:</div>
+                                <div class="info-value" th:text="${order.note ?: 'Không có ghi chú'}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông Tin Khách Hàng -->
+                    <div class="info-box">
+                        <h4 class="mb-3">Thông Tin Khách Hàng</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Tên Đăng Nhập:</div>
+                                <div class="info-value" th:text="${order.userName}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Tên Người Nhận:</div>
+                                <div class="info-value" th:text="${order.receiverName}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="info-label">Số Điện Thoại:</div>
+                                <div class="info-value" th:text="${order.receiverPhone}"></div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="info-label">Địa Chỉ Giao Hàng:</div>
+                                <div class="info-value" th:text="${order.shippingAddress}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chi Tiết Sản Phẩm -->
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <strong>Chi Tiết Sản Phẩm</strong>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40%">Sản Phẩm</th>
+                                        <th style="width: 15%">Kích Cỡ/Màu</th>
+                                        <th style="width: 15%">Giá</th>
+                                        <th style="width: 15%">Số Lượng</th>
+                                        <th style="width: 15%">Thành Tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${order.orderItems}">
+                                        <td th:text="${item.productName}"></td>
+                                        <td>
+                                            <div th:text="${item.color}"></div>
+                                            <small class="text-muted" th:text="${'Size: ' + item.size}"></small>
+                                        </td>
+                                        <td th:text="${'₫' + #numbers.formatInteger(item.unitPrice, 1, 'COMMA')}"></td>
+                                        <td th:text="${item.quantity}"></td>
+                                        <td th:text="${'₫' + #numbers.formatInteger(item.subtotal, 1, 'COMMA')}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tổng Tiền -->
+                    <div class="info-box mt-3">
+                        <h5 class="mb-3">Tóm Tắt Chi Phí</h5>
+                        <div class="amount-row">
+                            <span>Tổng Tiền Hàng:</span>
+                            <span th:text="${'₫' + #numbers.formatInteger(order.totalAmount, 1, 'COMMA')}"></span>
+                        </div>
+                        <div class="amount-row total">
+                            <span>Tổng Thanh Toán:</span>
+                            <span th:text="${'₫' + #numbers.formatInteger(order.finalAmount, 1, 'COMMA')}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar - Hành Động -->
+                <div class="col-md-4">
+                    <!-- Cập Nhật Trạng Thái -->
+                    <div class="sidebar-section">
+                        <h5>Cập Nhật Trạng Thái</h5>
+                        <form method="post" th:action="@{/admin/orders/{id}/status(id=${order.id})}">
+                            <div class="mb-3">
+                                <label class="form-label">Trạng Thái Mới</label>
+                                <select class="form-select" name="status" required>
+                                    <option value="" selected disabled>-- Chọn trạng thái --</option>
+                                    <option th:each="s : ${availableStatuses}" 
+                                            th:value="${s}" 
+                                            th:text="${s}"
+                                            th:selected="${order.orderStatus == s}"></option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-save"></i> Cập Nhật
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Hành Động Khác -->
+                    <div class="sidebar-section">
+                        <h5>Hành Động</h5>
+                        <div th:if="${order.orderStatus != 'DELIVERED' and order.orderStatus != 'CANCELLED'}">
+                            <form method="post" th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" 
+                                  onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fas fa-times"></i> Hủy Đơn Hàng
+                                </button>
+                            </form>
+                        </div>
+                        <div th:if="${order.orderStatus == 'DELIVERED' or order.orderStatus == 'CANCELLED'}" class="alert alert-info">
+                            Không thể thực hiện hành động với đơn hàng này.
+                        </div>
+                    </div>
+
+                    <!-- Thông Tin Thêm -->
+                    <div class="sidebar-section">
+                        <h5>Thông Tin Hệ Thống</h5>
+                        <div class="mb-2">
+                            <small class="text-muted">ID:</small>
+                            <div class="text-break" th:text="${order.id}"></div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Cập Nhật Lần Cuối:</small>
+                            <div th:text="${order.updatedAt != null ? #temporals.format(order.updatedAt, 'dd/MM/yyyy HH:mm:ss') : 'Chưa có cập nhật'}"></div>
+                        </div>
+                        <div>
+                            <small class="text-muted">Số Sản Phẩm:</small>
+                            <div th:text="${order.orderItems.size()} + ' sản phẩm'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>

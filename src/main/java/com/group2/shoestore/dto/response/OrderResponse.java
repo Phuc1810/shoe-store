@@ -17,6 +17,10 @@ import java.util.List;
 @Builder
 public class OrderResponse {
 
+    // Dùng cho admin nếu code admin đang gọi id
+    private Long id;
+
+    // Dùng cho user side hiện tại
     private Long orderId;
 
     private String orderCode;
@@ -39,6 +43,7 @@ public class OrderResponse {
 
     private String orderStatus;
 
+    // Text tiếng Việt cho user UI
     private String paymentStatusText;
 
     private String orderStatusText;
@@ -51,5 +56,11 @@ public class OrderResponse {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
+    // Dùng cho admin list
+    private Integer totalItems;
+
+    // Dùng cho user order detail/success
     private List<OrderItemResponse> items;
 }
