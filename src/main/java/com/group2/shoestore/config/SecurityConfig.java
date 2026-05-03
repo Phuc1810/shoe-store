@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 "/register",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers("/admin/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/cart",
                                 "/cart/**",
@@ -48,7 +48,7 @@ public class SecurityConfig {
                                 "/orders/**",
                                 "/profile",
                                 "/profile/**"
-                        ).authenticated()
+                        ).hasRole("USER")
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
@@ -56,7 +56,13 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler((request, response, authentication) -> {
+                            boolean isAdmin = authentication.getAuthorities()
+                                    .stream()
+                                    .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+
+                            response.sendRedirect(isAdmin ? "/admin/orders" : "/");
+                        })
                         .failureUrl("/login?error")
                 )
                 .logout(logout -> logout

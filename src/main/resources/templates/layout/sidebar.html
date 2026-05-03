@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <body>
-<aside th:fragment="sidebar" class="border-end p-3" style="width: 240px;">
-    <a class="d-block fw-semibold text-decoration-none mb-3" th:href="@{/admin}">Shoe Store Admin</a>
-<!--    <nav class="nav flex-column">-->
-<!--        <a class="nav-link px-0" th:href="@{/admin}">Dashboard</a>-->
-<!--    </nav>-->
+<aside th:fragment="sidebar" class="border-end p-3 d-flex flex-column" style="width: 240px; min-height: 100vh;">
+    <a class="d-block fw-semibold text-decoration-none mb-3" th:href="@{/admin/orders}">Shoe Store Admin</a>
 
-    <nav class="nav flex-column">
+    <nav class="nav flex-column mb-2">
         <a class="nav-link px-0" th:href="@{/admin/products}">Quản lí sản phẩm</a>
     </nav>
     <nav class="nav flex-column">
         <a class="nav-link px-0" th:href="@{/admin/orders}">Quản lí đơn hàng</a>
     </nav>
 
+    <div class="pt-3">
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="btn btn-outline-danger w-100">
+                Đăng xuất
+            </button>
+        </form>
+    </div>
 </aside>
 </body>
 </html>
