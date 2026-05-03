@@ -24,6 +24,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 //@PreAuthorize("hasRole('ADMIN')")
 public class AdminOrderController {
 
+    private static final String[] ADMIN_ORDER_STATUSES = {
+            "PENDING_PAYMENT", "CONFIRMED", "COMPLETED", "CANCELLED"
+    };
     private final AdminOrderService adminOrderService;
     private static final int PAGE_SIZE = 10;
 
@@ -51,7 +54,7 @@ public class AdminOrderController {
             model.addAttribute("status", status);
             
             // Các trạng thái có sẵn để lọc
-            model.addAttribute("statuses", new String[]{"CONFIRMED", "SHIPPING", "DELIVERED", "CANCELLED"});
+            model.addAttribute("statuses", ADMIN_ORDER_STATUSES);
             
             return "admin/order/list";
         } catch (Exception e) {
@@ -73,7 +76,7 @@ public class AdminOrderController {
             model.addAttribute("order", order);
             
             // Các trạng thái có thể chuyển tới
-            model.addAttribute("availableStatuses", new String[]{"CONFIRMED", "SHIPPING", "DELIVERED", "CANCELLED"});
+            model.addAttribute("availableStatuses", ADMIN_ORDER_STATUSES);
             
             return "admin/order/detail";
         } catch (Exception e) {

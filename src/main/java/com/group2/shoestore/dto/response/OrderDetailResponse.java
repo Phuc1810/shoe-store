@@ -10,9 +10,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * DTO dùng để trả về thông tin chi tiết đơn hàng
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +21,6 @@ public class OrderDetailResponse {
 
     private String orderCode;
 
-    // Thông tin khách hàng
     private Long userId;
 
     private String userName;
@@ -35,13 +31,23 @@ public class OrderDetailResponse {
 
     private String shippingAddress;
 
-    // Thông tin thanh toán
     private String paymentMethod;
+
+    private String paymentMethodText;
 
     private String paymentStatus;
 
-    // Thông tin đơn hàng
+    private String paymentStatusText;
+
+    private String paymentStatusBadgeClass;
+
     private String orderStatus;
+
+    private String orderStatusText;
+
+    private String orderStatusBadgeClass;
+
+    private boolean cancellable;
 
     private String note;
 
@@ -49,17 +55,12 @@ public class OrderDetailResponse {
 
     private BigDecimal finalAmount;
 
-    // Danh sách sản phẩm trong đơn
     private List<OrderItemDetail> orderItems;
 
-    // Thời gian
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    /**
-     * DTO cho chi tiết sản phẩm trong đơn hàng
-     */
     @Getter
     @Setter
     @NoArgsConstructor

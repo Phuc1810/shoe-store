@@ -17,32 +17,34 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
-/**
- * Service implement cho quản lý đơn hàng
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
 public class AdminOrderServiceImpl implements AdminOrderService {
 
+    private static final String PAYMENT_METHOD_COD = "COD";
+    private static final String PAYMENT_METHOD_BANK_QR = "BANK_QR";
+    private static final String PAYMENT_STATUS_PENDING = "PENDING";
+    private static final String PAYMENT_STATUS_PAID = "PAID";
+    private static final String ORDER_STATUS_PENDING_PAYMENT = "PENDING_PAYMENT";
+    private static final String ORDER_STATUS_CONFIRMED = "CONFIRMED";
+    private static final String ORDER_STATUS_COMPLETED = "COMPLETED";
+    private static final String ORDER_STATUS_CANCELLED = "CANCELLED";
+
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
-    /**
-     * Tìm kiếm đơn hàng với bộ lọc và phân trang
-     */
     @Override
     @Transactional(readOnly = true)
     public Page<OrderResponse> search(String orderCode, String customerName, String status, Pageable pageable) {
         log.info("Searching orders - orderCode: {}, customerName: {}, status: {}", orderCode, customerName, status);
-        // CHUẨN HÓA DỮ LIỆU Ở ĐÂY
-        // Nếu rỗng hoặc chỉ toàn khoảng trắng thì biến thành null
+
         String cleanCode = (orderCode != null && !orderCode.isBlank()) ? orderCode.trim() : null;
         String cleanName = (customerName != null && !customerName.isBlank()) ? customerName.trim() : null;
         String cleanStatus = (status != null && !status.isBlank()) ? status.trim() : null;
+
         try {
-            //Page<Order> orders = orderRepository.search(orderCode, customerName, status, pageable);
             Page<Order> orders = orderRepository.search(cleanCode, cleanName, cleanStatus, pageable);
             return orders.map(this::convertToResponse);
         } catch (Exception e) {
@@ -51,43 +53,31 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
     }
 
-    /**
-     * Lấy thông tin chi tiết đơn hàng theo ID
-     */
     @Override
     @Transactional(readOnly = true)
     public OrderDetailResponse getOrderById(Long id) {
         log.info("Getting order by id: {}", id);
-        
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại với ID: " + id));
-        
+
         return convertToDetailResponse(order);
     }
 
-    /**
-     * Cập nhật trạng thái đơn hàng
-     */
     @Override
     public OrderDetailResponse updateOrderStatus(Long id, String newStatus) {
         log.info("Updating order status - id: {}, newStatus: {}", id, newStatus);
-        
-        // Lấy đơn hàng từ database
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại với ID: " + id));
-        
-        // Kiểm tra trạng thái hiện tại
+
         String currentStatus = order.getOrderStatus();
-        
-        // Validate trạng thái mới
         validateStatusTransition(currentStatus, newStatus);
-        
+
         try {
-            // Cập nhật trạng thái
             order.setOrderStatus(newStatus);
             Order updatedOrder = orderRepository.save(order);
             log.info("Order status updated successfully - id: {}, newStatus: {}", id, newStatus);
-            
             return convertToDetailResponse(updatedOrder);
         } catch (Exception e) {
             log.error("Error updating order status", e);
@@ -95,25 +85,19 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
     }
 
-    /**
-     * Hủy đơn hàng
-     */
     @Override
     public void cancelOrder(Long id) {
         log.info("Cancelling order with id: {}", id);
-        
-        // Lấy đơn hàng từ database
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Đơn hàng không tồn tại với ID: " + id));
-        
-        // Kiểm tra xem đơn hàng có thể hủy được không
-        if ("DELIVERED".equals(order.getOrderStatus()) || "CANCELLED".equals(order.getOrderStatus())) {
-            throw new BadRequestException("Không thể hủy đơn hàng có trạng thái: " + order.getOrderStatus());
+
+        if (!isCancellableStatus(order.getOrderStatus())) {
+            throw new BadRequestException("Không thể hủy đơn hàng có trạng thái: " + resolveOrderStatusText(order.getOrderStatus()));
         }
-        
+
         try {
-            // Cập nhật trạng thái thành CANCELLED
-            order.setOrderStatus("CANCELLED");
+            order.setOrderStatus(ORDER_STATUS_CANCELLED);
             orderRepository.save(order);
             log.info("Order cancelled successfully - id: {}", id);
         } catch (Exception e) {
@@ -122,14 +106,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
     }
 
-    /**
-     * Lấy danh sách đơn hàng theo trạng thái
-     */
     @Override
     @Transactional(readOnly = true)
     public Page<OrderResponse> getOrdersByStatus(String status, Pageable pageable) {
         log.info("Getting orders by status: {}", status);
-        
+
         try {
             Page<Order> orders = orderRepository.findByOrderStatusOrderByCreatedAtDesc(status, pageable);
             return orders.map(this::convertToResponse);
@@ -139,38 +120,34 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         }
     }
 
-    /**
-     * Kiểm tra xem chuyển đổi trạng thái có hợp lệ không
-     */
     private void validateStatusTransition(String currentStatus, String newStatus) {
-        // Những trạng thái hợp lệ: CONFIRMED, SHIPPING, DELIVERED, CANCELLED
         if (!isValidStatus(newStatus)) {
             throw new BadRequestException("Trạng thái đơn hàng không hợp lệ: " + newStatus);
         }
-        
-        // Không thể chuyển từ DELIVERED hoặc CANCELLED sang trạng thái khác
-        if (("DELIVERED".equals(currentStatus) || "CANCELLED".equals(currentStatus)) 
-            && !currentStatus.equals(newStatus)) {
-            throw new BadRequestException("Không thể thay đổi trạng thái từ " + currentStatus);
+
+        if ((ORDER_STATUS_COMPLETED.equals(currentStatus) || ORDER_STATUS_CANCELLED.equals(currentStatus))
+                && !currentStatus.equals(newStatus)) {
+            throw new BadRequestException("Không thể thay đổi trạng thái từ " + resolveOrderStatusText(currentStatus));
         }
     }
 
-    /**
-     * Kiểm tra xem trạng thái có hợp lệ không
-     */
     private boolean isValidStatus(String status) {
-        return "CONFIRMED".equals(status) || "SHIPPING".equals(status) || 
-               "DELIVERED".equals(status) || "CANCELLED".equals(status);
+        return ORDER_STATUS_PENDING_PAYMENT.equals(status)
+                || ORDER_STATUS_CONFIRMED.equals(status)
+                || ORDER_STATUS_COMPLETED.equals(status)
+                || ORDER_STATUS_CANCELLED.equals(status);
     }
 
-    /**
-     * Chuyển đổi Order entity sang OrderResponse DTO
-     */
+    private boolean isCancellableStatus(String status) {
+        return ORDER_STATUS_PENDING_PAYMENT.equals(status) || ORDER_STATUS_CONFIRMED.equals(status);
+    }
+
     private OrderResponse convertToResponse(Order order) {
         long totalItems = orderItemRepository.countByOrderId(order.getId());
-        
+
         return OrderResponse.builder()
                 .id(order.getId())
+                .orderId(order.getId())
                 .orderCode(order.getOrderCode())
                 .receiverName(order.getReceiverName())
                 .receiverPhone(order.getReceiverPhone())
@@ -178,18 +155,23 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .paymentMethod(order.getPaymentMethod())
                 .paymentStatus(order.getPaymentStatus())
                 .orderStatus(order.getOrderStatus())
+                .paymentStatusText(resolvePaymentStatusText(order.getPaymentStatus()))
+                .orderStatusText(resolveOrderStatusText(order.getOrderStatus()))
+                .paymentStatusBadgeClass(resolvePaymentStatusBadgeClass(order.getPaymentStatus()))
+                .orderStatusBadgeClass(resolveOrderStatusBadgeClass(order.getOrderStatus()))
+                .shippingAddress(order.getShippingAddress())
+                .note(order.getNote())
+                .totalAmount(order.getTotalAmount())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .totalItems((int) totalItems)
+                .cancellable(isCancellableStatus(order.getOrderStatus()))
                 .build();
     }
 
-    /**
-     * Chuyển đổi Order entity sang OrderDetailResponse DTO
-     */
     private OrderDetailResponse convertToDetailResponse(Order order) {
         var orderItems = orderItemRepository.findByOrderId(order.getId());
-        
+
         return OrderDetailResponse.builder()
                 .id(order.getId())
                 .orderCode(order.getOrderCode())
@@ -199,8 +181,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .receiverPhone(order.getReceiverPhone())
                 .shippingAddress(order.getShippingAddress())
                 .paymentMethod(order.getPaymentMethod())
+                .paymentMethodText(resolvePaymentMethodText(order.getPaymentMethod()))
                 .paymentStatus(order.getPaymentStatus())
+                .paymentStatusText(resolvePaymentStatusText(order.getPaymentStatus()))
+                .paymentStatusBadgeClass(resolvePaymentStatusBadgeClass(order.getPaymentStatus()))
                 .orderStatus(order.getOrderStatus())
+                .orderStatusText(resolveOrderStatusText(order.getOrderStatus()))
+                .orderStatusBadgeClass(resolveOrderStatusBadgeClass(order.getOrderStatus()))
+                .cancellable(isCancellableStatus(order.getOrderStatus()))
                 .note(order.getNote())
                 .totalAmount(order.getTotalAmount())
                 .finalAmount(order.getFinalAmount())
@@ -212,9 +200,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .build();
     }
 
-    /**
-     * Chuyển đổi OrderItem entity sang OrderItemDetail DTO
-     */
     private OrderDetailResponse.OrderItemDetail convertOrderItemToDetail(OrderItem item) {
         return OrderDetailResponse.OrderItemDetail.builder()
                 .id(item.getId())
@@ -225,5 +210,47 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .quantity(item.getQuantity())
                 .subtotal(item.getSubtotal())
                 .build();
+    }
+
+    private String resolvePaymentMethodText(String paymentMethod) {
+        return switch (paymentMethod) {
+            case PAYMENT_METHOD_COD -> "Thanh toán khi nhận hàng";
+            case PAYMENT_METHOD_BANK_QR -> "Chuyển khoản QR ngân hàng";
+            default -> paymentMethod;
+        };
+    }
+
+    private String resolvePaymentStatusText(String paymentStatus) {
+        if (PAYMENT_STATUS_PAID.equals(paymentStatus)) {
+            return "Đã thanh toán";
+        }
+        return "Chờ thanh toán";
+    }
+
+    private String resolveOrderStatusText(String orderStatus) {
+        return switch (orderStatus) {
+            case ORDER_STATUS_PENDING_PAYMENT -> "Chờ thanh toán";
+            case ORDER_STATUS_CONFIRMED -> "Đã xác nhận";
+            case ORDER_STATUS_COMPLETED -> "Hoàn thành";
+            case ORDER_STATUS_CANCELLED -> "Đã hủy";
+            default -> orderStatus;
+        };
+    }
+
+    private String resolvePaymentStatusBadgeClass(String paymentStatus) {
+        if (PAYMENT_STATUS_PAID.equals(paymentStatus)) {
+            return "text-bg-success";
+        }
+        return "text-bg-warning";
+    }
+
+    private String resolveOrderStatusBadgeClass(String orderStatus) {
+        return switch (orderStatus) {
+            case ORDER_STATUS_PENDING_PAYMENT -> "text-bg-warning";
+            case ORDER_STATUS_CONFIRMED -> "text-bg-primary";
+            case ORDER_STATUS_COMPLETED -> "text-bg-success";
+            case ORDER_STATUS_CANCELLED -> "text-bg-danger";
+            default -> "text-bg-secondary";
+        };
     }
 }
