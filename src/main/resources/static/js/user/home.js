@@ -3,6 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const dropdowns = document.querySelectorAll(".home-nav-dropdown");
     const closeTimers = new WeakMap();
     const closeDelayMs = 250;
+    const anonymousHeaderState = document.querySelector(".anonymous-header-state");
+    const authRequiredModalElement = document.getElementById("authRequiredModal");
+    const authRequiredModal = anonymousHeaderState && authRequiredModalElement && window.bootstrap
+        ? new window.bootstrap.Modal(authRequiredModalElement)
+        : null;
 
     function openDropdown(dropdown) {
         window.clearTimeout(closeTimers.get(dropdown));
@@ -37,4 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
     desktopQuery.addEventListener("change", () => {
         dropdowns.forEach((dropdown) => dropdown.classList.remove("is-open"));
     });
+
+    if (anonymousHeaderState && authRequiredModal) {
+        document.addEventListener("click", (event) => {
+            const profileLink = event.target.closest("a[href='/profile'], a[href$='/profile']");
+            if (!profileLink) {
+                return;
+            }
+
+            event.preventDefault();
+            authRequiredModal.show();
+        });
+    }
 });

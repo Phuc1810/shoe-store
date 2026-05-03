@@ -14,103 +14,126 @@
 
 <main class="checkout-page">
     <section class="container checkout-shell">
-        <div class="cart-heading">
-            <div>
-                <h1>Thanh toán</h1>
-                <p>Nhập thông tin nhận hàng và chọn phương thức thanh toán</p>
+        <div class="cart-heading checkout-page-heading rounded-4 shadow-sm p-4 p-lg-5 mb-4 mb-lg-5">
+            <div class="d-grid gap-2">
+                <span class="home-section-kicker text-uppercase">Thanh toán</span>
+                <div>
+                    <h1>Thanh toán</h1>
+                    <p>Nhập thông tin nhận hàng và chọn phương thức thanh toán</p>
+                </div>
             </div>
-            <a class="btn btn-outline-primary" th:href="@{/cart}">Quay lại giỏ hàng</a>
+            <a class="btn home-btn-ghost rounded-pill px-4 py-2" th:href="@{/cart}">Quay lại giỏ hàng</a>
         </div>
 
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+        <div th:if="${errorMessage}" class="alert auth-alert rounded-4 px-4 py-3 shadow-sm" th:text="${errorMessage}">
             Có lỗi xảy ra
         </div>
 
-        <form th:action="@{/checkout}" method="post" class="row g-4 align-items-start">
+        <form th:action="@{/checkout}" method="post" class="row g-4 g-lg-5 align-items-start">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <div class="col-12 col-lg-7">
-                <section class="checkout-card">
-                    <h2>Thông tin nhận hàng</h2>
+                <section class="checkout-card rounded-4 shadow-sm p-4 p-lg-5">
+                    <div class="d-grid gap-4 gap-lg-5">
+                        <div class="d-grid gap-4">
+                            <div class="d-grid gap-2">
+                                <span class="home-section-kicker text-uppercase">Giao hàng</span>
+                                <h2 class="mb-0">Thông tin nhận hàng</h2>
+                            </div>
 
-                    <div class="mb-3">
-                        <label for="receiverName" class="form-label">Tên người nhận</label>
-                        <input type="text" id="receiverName" name="receiverName" class="form-control"
-                               th:value="${checkoutRequest.receiverName}" required>
-                    </div>
+                            <div class="d-grid gap-3 gap-lg-4">
+                                <div>
+                                    <label for="receiverName" class="form-label text-muted small mb-2">Tên người nhận</label>
+                                    <input type="text" id="receiverName" name="receiverName" class="form-control auth-input rounded-4 px-4 py-3"
+                                           th:value="${checkoutRequest.receiverName}" required>
+                                </div>
 
-                    <div class="mb-3">
-                        <label for="receiverPhone" class="form-label">Số điện thoại</label>
-                        <input type="text" id="receiverPhone" name="receiverPhone" class="form-control"
-                               th:value="${checkoutRequest.receiverPhone}" required>
-                    </div>
+                                <div>
+                                    <label for="receiverPhone" class="form-label text-muted small mb-2">Số điện thoại</label>
+                                    <input type="text" id="receiverPhone" name="receiverPhone" class="form-control auth-input rounded-4 px-4 py-3"
+                                           th:value="${checkoutRequest.receiverPhone}" required>
+                                </div>
 
-                    <div class="mb-3">
-                        <label for="shippingAddress" class="form-label">Địa chỉ nhận hàng</label>
-                        <input type="text" id="shippingAddress" name="shippingAddress" class="form-control"
-                               th:value="${checkoutRequest.shippingAddress}" required>
-                    </div>
+                                <div>
+                                    <label for="shippingAddress" class="form-label text-muted small mb-2">Địa chỉ nhận hàng</label>
+                                    <input type="text" id="shippingAddress" name="shippingAddress" class="form-control auth-input rounded-4 px-4 py-3"
+                                           th:value="${checkoutRequest.shippingAddress}" required>
+                                </div>
 
-                    <div class="mb-4">
-                        <label for="note" class="form-label">Ghi chú</label>
-                        <textarea id="note" name="note" class="form-control" rows="3"
-                                  th:text="${checkoutRequest.note}"></textarea>
-                    </div>
+                                <div>
+                                    <label for="note" class="form-label text-muted small mb-2">Ghi chú</label>
+                                    <textarea id="note" name="note" class="form-control auth-input rounded-4 px-4 py-3" rows="4"
+                                              th:text="${checkoutRequest.note}"></textarea>
+                                </div>
+                            </div>
+                        </div>
 
-                    <h2>Phương thức thanh toán</h2>
-                    <div class="payment-method-list">
-                        <label class="payment-method-option">
-                            <input type="radio" name="paymentMethod" value="COD"
-                                   th:checked="${checkoutRequest.paymentMethod == null || checkoutRequest.paymentMethod == 'COD'}">
-                            <span>
-                                <strong>COD</strong>
-                                <small>Thanh toán khi nhận hàng</small>
-                            </span>
-                        </label>
-                        <label class="payment-method-option">
-                            <input type="radio" name="paymentMethod" value="BANK_QR"
-                                   th:checked="${checkoutRequest.paymentMethod == 'BANK_QR'}">
-                            <span>
-                                <strong>BANK_QR</strong>
-                                <small>Thanh toán bằng QR ngân hàng</small>
-                            </span>
-                        </label>
+                        <div class="d-grid gap-4">
+                            <div class="d-grid gap-2">
+                                <span class="home-section-kicker text-uppercase">Thanh toán</span>
+                                <h2 class="mb-0">Phương thức thanh toán</h2>
+                            </div>
+                            <div class="payment-method-list">
+                                <label class="payment-method-option rounded-4 p-4">
+                                    <input type="radio" name="paymentMethod" value="COD"
+                                           th:checked="${checkoutRequest.paymentMethod == null || checkoutRequest.paymentMethod == 'COD'}">
+                                    <span>
+                                        <strong>COD</strong>
+                                        <small>Thanh toán khi nhận hàng</small>
+                                    </span>
+                                </label>
+                                <label class="payment-method-option rounded-4 p-4">
+                                    <input type="radio" name="paymentMethod" value="BANK_QR"
+                                           th:checked="${checkoutRequest.paymentMethod == 'BANK_QR'}">
+                                    <span>
+                                        <strong>BANK_QR</strong>
+                                        <small>Thanh toán bằng QR ngân hàng</small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
 
             <div class="col-12 col-lg-5">
-                <aside class="checkout-card checkout-summary-card">
-                    <h2>Tóm tắt đơn hàng</h2>
-                    <div class="checkout-summary-items">
-                        <div class="checkout-summary-item d-flex align-items-center gap-3" th:each="item : ${cart.items}">
-                            <img class="checkout-summary-img flex-shrink-0"
-                                 th:src="${item.imageUrl}"
-                                 th:alt="${item.productName}">
-                            <div class="checkout-summary-info flex-grow-1">
-                                <div class="checkout-summary-name" th:text="${item.productName}">Tên sản phẩm</div>
-                                <div class="checkout-summary-meta">
-                                    <span th:text="${item.color}">Màu</span>
-                                    <span> / </span>
-                                    <span th:text="${item.size}">Size</span>
-                                    <span> × </span>
-                                    <span th:text="${item.quantity}">1</span>
+                <aside class="checkout-card checkout-summary-card rounded-4 shadow-sm p-4 p-lg-5">
+                    <div class="d-grid gap-4">
+                        <div class="d-grid gap-2">
+                            <span class="home-section-kicker text-uppercase">Đơn hàng</span>
+                            <h2 class="mb-0">Tóm tắt đơn hàng</h2>
+                        </div>
+
+                        <div class="checkout-summary-items">
+                            <div class="checkout-summary-item d-flex align-items-center gap-3 gap-lg-4" th:each="item : ${cart.items}">
+                                <img class="checkout-summary-img flex-shrink-0 rounded-4"
+                                     th:src="${item.imageUrl}"
+                                     th:alt="${item.productName}">
+                                <div class="checkout-summary-info flex-grow-1">
+                                    <div class="checkout-summary-name" th:text="${item.productName}">Tên sản phẩm</div>
+                                    <div class="checkout-summary-meta">
+                                        <span th:text="${item.color}">Màu</span>
+                                        <span> / </span>
+                                        <span th:text="${item.size}">Size</span>
+                                        <span> × </span>
+                                        <span th:text="${item.quantity}">1</span>
+                                    </div>
+                                </div>
+                                <div class="checkout-summary-price text-end fw-bold"
+                                     th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                                    0 đ
                                 </div>
                             </div>
-                            <div class="checkout-summary-price text-end fw-bold"
-                                 th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 0, 'COMMA') + ' đ'}">
-                                0 đ
-                            </div>
                         </div>
-                    </div>
 
-                    <div class="cart-summary-row checkout-total-row">
-                        <span>Tổng tiền</span>
-                        <strong th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
-                            0 đ
-                        </strong>
-                    </div>
+                        <div class="cart-summary-row checkout-total-row">
+                            <span>Tổng tiền</span>
+                            <strong th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                                0 đ
+                            </strong>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Đặt hàng</button>
+                        <button type="submit" class="btn home-btn-primary rounded-pill py-3 btn-lg w-100">Đặt hàng</button>
+                    </div>
                 </aside>
             </div>
         </form>

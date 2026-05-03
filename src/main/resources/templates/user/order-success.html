@@ -14,69 +14,80 @@
 
 <main class="order-page">
     <section class="container order-shell">
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+        <div th:if="${errorMessage}" class="alert auth-alert rounded-4 px-4 py-3 shadow-sm" th:text="${errorMessage}">
             Có lỗi xảy ra
         </div>
 
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">
+        <div th:if="${successMessage}" class="alert cart-success-alert rounded-4 px-4 py-3 shadow-sm" th:text="${successMessage}">
             Thao tác thành công
         </div>
 
-        <div class="order-result-card">
+        <div class="order-result-card rounded-4 shadow-sm p-4 p-lg-5">
             <div class="order-result-icon">
                 <i class="bi bi-check-lg"></i>
             </div>
-            <h1>Đặt hàng thành công</h1>
-            <p>Mã đơn hàng: <strong th:text="${order.orderCode}">ORD</strong></p>
-            <div class="d-flex flex-wrap justify-content-center gap-2">
-                <a class="btn btn-primary" th:href="@{/products}">Tiếp tục mua sắm</a>
-                <a class="btn btn-outline-primary" th:href="@{/orders}">Xem đơn hàng của tôi</a>
+            <div class="d-grid gap-3">
+                <div>
+                    <span class="home-section-kicker text-uppercase">Hoàn tất đơn hàng</span>
+                    <h1>Đặt hàng thành công</h1>
+                </div>
+                <p class="mb-0">Mã đơn hàng: <strong th:text="${order.orderCode}">ORD</strong></p>
+            </div>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                <a class="btn home-btn-primary rounded-pill px-4 py-3" th:href="@{/products}">Tiếp tục mua sắm</a>
+                <a class="btn home-btn-ghost rounded-pill px-4 py-3" th:href="@{/orders}">Xem đơn hàng của tôi</a>
             </div>
         </div>
 
-        <div class="row g-4 mt-1">
+        <div class="row g-4 g-lg-5 mt-1">
             <div class="col-12 col-lg-5">
-                <section class="checkout-card h-100">
-                    <h2>Thông tin đơn hàng</h2>
-                    <dl class="order-info-list">
-                        <dt>Người nhận</dt>
-                        <dd th:text="${order.receiverName}">Tên người nhận</dd>
-                        <dt>Số điện thoại</dt>
-                        <dd th:text="${order.receiverPhone}">Số điện thoại</dd>
-                        <dt>Địa chỉ</dt>
-                        <dd th:text="${order.shippingAddress}">Địa chỉ</dd>
-                        <dt>Phương thức thanh toán</dt>
-                        <dd th:text="${order.paymentMethod}">COD</dd>
-                        <dt>Trạng thái thanh toán</dt>
-                        <dd>
-                            <span class="badge status-badge"
-                                  th:classappend="${' ' + order.paymentStatusBadgeClass}"
-                                  th:text="${order.paymentStatusText}">
-                                Chờ thanh toán
-                            </span>
-                        </dd>
-                        <dt>Trạng thái đơn hàng</dt>
-                        <dd>
-                            <span class="badge status-badge"
-                                  th:classappend="${' ' + order.orderStatusBadgeClass}"
-                                  th:text="${order.orderStatusText}">
-                                Đã xác nhận
-                            </span>
-                        </dd>
-                        <dt>Tổng tiền</dt>
-                        <dd class="text-primary fw-bold"
-                            th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
-                            0 đ
-                        </dd>
-                    </dl>
+                <section class="checkout-card order-info-card rounded-4 shadow-sm p-4 p-lg-5 h-100">
+                    <div class="d-grid gap-3">
+                        <span class="home-section-kicker text-uppercase">Thông tin đơn</span>
+                        <h2 class="mb-0">Thông tin đơn hàng</h2>
+                        <dl class="order-info-list">
+                            <dt>Người nhận</dt>
+                            <dd th:text="${order.receiverName}">Tên người nhận</dd>
+                            <dt>Số điện thoại</dt>
+                            <dd th:text="${order.receiverPhone}">Số điện thoại</dd>
+                            <dt>Địa chỉ</dt>
+                            <dd th:text="${order.shippingAddress}">Địa chỉ</dd>
+                            <dt>Phương thức thanh toán</dt>
+                            <dd th:text="${order.paymentMethod}">COD</dd>
+                            <dt>Trạng thái thanh toán</dt>
+                            <dd>
+                                <span class="badge status-badge"
+                                      th:classappend="${' ' + order.paymentStatusBadgeClass}"
+                                      th:text="${order.paymentStatusText}">
+                                    Chờ thanh toán
+                                </span>
+                            </dd>
+                            <dt>Trạng thái đơn hàng</dt>
+                            <dd>
+                                <span class="badge status-badge"
+                                      th:classappend="${' ' + order.orderStatusBadgeClass}"
+                                      th:text="${order.orderStatusText}">
+                                    Đã xác nhận
+                                </span>
+                            </dd>
+                            <dt>Tổng tiền</dt>
+                            <dd class="cart-money"
+                                th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                                0 đ
+                            </dd>
+                        </dl>
+                    </div>
                 </section>
             </div>
 
             <div class="col-12 col-lg-7">
-                <section class="checkout-card h-100">
-                    <h2>Sản phẩm đã đặt</h2>
-                    <div class="table-responsive">
-                        <table class="table align-middle cart-table">
+                <section class="checkout-card order-items-card rounded-4 shadow-sm p-4 p-lg-5 h-100">
+                    <div class="d-grid gap-3">
+                        <span class="home-section-kicker text-uppercase">Sản phẩm đã đặt</span>
+                        <h2 class="mb-0">Sản phẩm đã đặt</h2>
+                    </div>
+                    <div class="table-responsive mt-4">
+                        <table class="table align-middle cart-table mb-0">
                             <thead>
                             <tr>
                                 <th>Sản phẩm</th>
@@ -88,16 +99,16 @@
                             <tbody>
                             <tr th:each="item : ${order.items}">
                                 <td>
-                                    <div class="fw-semibold" th:text="${item.productName}">Tên sản phẩm</div>
+                                    <div class="fw-semibold cart-item-title" th:text="${item.productName}">Tên sản phẩm</div>
                                     <div class="small text-muted">
                                         <span th:text="${item.color}">Màu</span>
                                         <span> / </span>
                                         <span th:text="${item.size}">Size</span>
                                     </div>
                                 </td>
-                                <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'POINT', 0, 'COMMA') + ' đ'}">0 đ</td>
+                                <td class="cart-money" th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'POINT', 0, 'COMMA') + ' đ'}">0 đ</td>
                                 <td th:text="${item.quantity}">1</td>
-                                <td class="fw-semibold"
+                                <td class="fw-semibold cart-money"
                                     th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 0, 'COMMA') + ' đ'}">
                                     0 đ
                                 </td>

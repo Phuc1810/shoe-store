@@ -12,73 +12,81 @@
 <body class="home-page">
 <header th:replace="~{layout/header :: userHeader}"></header>
 
-<main>
-    <section class="hero-section">
-        <div id="homeHeroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-            <div class="carousel-indicators hero-indicators">
-                <button type="button"
-                        data-bs-target="#homeHeroCarousel"
-                        th:each="image, iterStat : ${home.bannerImages}"
-                        th:classappend="${iterStat.first} ? ' active'"
-                        th:attr="data-bs-slide-to=${iterStat.index}, aria-label=${'Slide ' + iterStat.count}">
-                </button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item hero-carousel-item"
-                     th:each="image, iterStat : ${home.bannerImages}"
-                     th:classappend="${iterStat.first} ? ' active'">
-                    <img th:src="${image}" class="d-block w-100" alt="Shoe Store banner">
-                    <div class="hero-overlay"></div>
-                    <div class="container hero-caption-wrap">
-                        <div class="hero-caption">
-                            <h1>Bước đi phong cách cùng Shoe Store</h1>
-                            <p>Khám phá những mẫu giày mới nhất dành cho bạn</p>
-                            <a class="btn btn-primary btn-lg" th:href="@{/products}">Mua ngay</a>
+<main class="pb-5">
+    <section class="hero-section py-4 py-lg-5">
+        <div class="container-fluid px-0 px-lg-4">
+            <div class="home-hero-shell rounded-4 overflow-hidden shadow-sm">
+                <div id="homeHeroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-indicators hero-indicators">
+                        <button type="button"
+                                data-bs-target="#homeHeroCarousel"
+                                th:each="image, iterStat : ${home.bannerImages}"
+                                th:classappend="${iterStat.first} ? ' active'"
+                                th:attr="data-bs-slide-to=${iterStat.index}, aria-label=${'Slide ' + iterStat.count}">
+                        </button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item hero-carousel-item"
+                             th:each="image, iterStat : ${home.bannerImages}"
+                             th:classappend="${iterStat.first} ? ' active'">
+                            <img th:src="${image}" class="d-block w-100" alt="Shoe Store banner">
+                            <div class="hero-overlay"></div>
+                            <div class="container hero-caption-wrap">
+                                <div class="hero-caption">
+                                    <span class="home-section-kicker text-uppercase">Shoe Store</span>
+                                    <h1>Bước đi phong cách cùng Shoe Store</h1>
+                                    <p>Khám phá những mẫu giày mới nhất dành cho bạn</p>
+                                    <a class="btn home-btn-primary rounded-pill px-4 px-lg-5 py-3" th:href="@{/products}">Mua ngay</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <button class="carousel-control-prev hero-control hero-control-prev" type="button"
+                            data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Trước</span>
+                    </button>
+                    <button class="carousel-control-next hero-control hero-control-next" type="button"
+                            data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Sau</span>
+                    </button>
                 </div>
             </div>
-            <button class="carousel-control-prev hero-control hero-control-prev" type="button"
-                    data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Trước</span>
-            </button>
-            <button class="carousel-control-next hero-control hero-control-next" type="button"
-                    data-bs-target="#homeHeroCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Sau</span>
-            </button>
         </div>
     </section>
 
-    <section class="container product-section">
-        <div class="section-heading">
-            <div>
-                <h2>Sản phẩm mới nhất</h2>
-                <p>Những thiết kế vừa cập nhật tại Shoe Store</p>
+    <section class="container product-section home-product-section">
+        <div class="section-heading home-section-heading mb-4 mb-lg-5">
+            <div class="d-grid gap-2">
+                <span class="home-section-kicker text-uppercase">Mới cập nhật</span>
+                <div>
+                    <h2>Sản phẩm mới nhất</h2>
+                    <p>Những thiết kế vừa cập nhật tại Shoe Store</p>
+                </div>
             </div>
-            <a class="btn btn-outline-primary" th:href="@{/products}">Xem tất cả</a>
+            <a class="btn home-btn-ghost rounded-pill px-4 py-2" th:href="@{/products}">Xem tất cả</a>
         </div>
 
-        <div th:if="${#lists.isEmpty(home.newestProducts)}" class="alert alert-info">
+        <div th:if="${#lists.isEmpty(home.newestProducts)}" class="home-empty-state rounded-4 shadow-sm p-4 p-lg-5">
             Chưa có sản phẩm mới.
         </div>
 
-        <div class="row g-4" th:if="${!#lists.isEmpty(home.newestProducts)}">
+        <div class="row g-4 g-xl-5" th:if="${!#lists.isEmpty(home.newestProducts)}">
             <div class="col-12 col-md-6 col-lg-3" th:each="product : ${home.newestProducts}">
                 <a class="product-card-link" th:href="@{/products/{id}(id=${product.productId})}">
-                    <article class="product-card">
-                        <div class="product-card-media">
+                    <article class="product-card home-product-card rounded-4 shadow-sm h-100">
+                        <div class="product-card-media home-product-card-media">
                             <img class="product-card-image" th:src="${product.imageUrl}" th:alt="${product.productName}">
                         </div>
-                        <div class="product-card-body">
+                        <div class="product-card-body home-product-card-body p-4">
                             <h3 th:text="${product.productName}">Tên sản phẩm</h3>
-                            <p>
+                            <p class="home-product-meta mb-3">
                                 <span th:text="${product.brandName}">Brand</span>
                                 <span> / </span>
                                 <span th:text="${product.categoryName}">Category</span>
                             </p>
-                            <strong th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                            <strong class="home-product-price" th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
                                 0 đ
                             </strong>
                         </div>
@@ -88,34 +96,37 @@
         </div>
     </section>
 
-    <section class="container product-section">
-        <div class="section-heading">
-            <div>
-                <h2>Sản phẩm hot nhất</h2>
-                <p>Các mẫu giày được quan tâm nhiều trong hệ thống</p>
+    <section class="container product-section home-product-section">
+        <div class="section-heading home-section-heading mb-4 mb-lg-5">
+            <div class="d-grid gap-2">
+                <span class="home-section-kicker text-uppercase">Được yêu thích</span>
+                <div>
+                    <h2>Sản phẩm hot nhất</h2>
+                    <p>Các mẫu giày được quan tâm nhiều trong hệ thống</p>
+                </div>
             </div>
-            <a class="btn btn-outline-primary" th:href="@{/products}">Xem tất cả</a>
+            <a class="btn home-btn-ghost rounded-pill px-4 py-2" th:href="@{/products}">Xem tất cả</a>
         </div>
 
-        <div th:if="${#lists.isEmpty(home.hotProducts)}" class="alert alert-info">
+        <div th:if="${#lists.isEmpty(home.hotProducts)}" class="home-empty-state rounded-4 shadow-sm p-4 p-lg-5">
             Chưa có sản phẩm hot.
         </div>
 
-        <div class="row g-4" th:if="${!#lists.isEmpty(home.hotProducts)}">
+        <div class="row g-4 g-xl-5" th:if="${!#lists.isEmpty(home.hotProducts)}">
             <div class="col-12 col-md-6 col-lg-3" th:each="product : ${home.hotProducts}">
                 <a class="product-card-link" th:href="@{/products/{id}(id=${product.productId})}">
-                    <article class="product-card">
-                        <div class="product-card-media">
+                    <article class="product-card home-product-card rounded-4 shadow-sm h-100">
+                        <div class="product-card-media home-product-card-media">
                             <img class="product-card-image" th:src="${product.imageUrl}" th:alt="${product.productName}">
                         </div>
-                        <div class="product-card-body">
+                        <div class="product-card-body home-product-card-body p-4">
                             <h3 th:text="${product.productName}">Tên sản phẩm</h3>
-                            <p>
+                            <p class="home-product-meta mb-3">
                                 <span th:text="${product.brandName}">Brand</span>
                                 <span> / </span>
                                 <span th:text="${product.categoryName}">Category</span>
                             </p>
-                            <strong th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                            <strong class="home-product-price" th:text="${product.price != null ? #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
                                 0 đ
                             </strong>
                         </div>

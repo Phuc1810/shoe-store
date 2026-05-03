@@ -15,76 +15,93 @@
 <main class="order-page">
     <section class="container order-shell">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-7">
-                <div class="checkout-card login-card">
-                    <div class="text-center mb-4">
-                        <h1 class="h3 fw-bold mb-2">Đăng ký tài khoản</h1>
-                        <p class="text-muted mb-0">Tạo tài khoản mới để lưu giỏ hàng, đặt hàng và theo dõi đơn mua.</p>
-                    </div>
-
-                    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}">
-                        Có lỗi xảy ra
-                    </div>
-
-                    <form th:action="@{/register}" th:object="${registerRequest}" method="post">
-                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
-                                <label for="username" class="form-label">Tên đăng nhập</label>
-                                <input type="text" id="username" th:field="*{username}" class="form-control">
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
-                                    Lỗi
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                <label for="fullName" class="form-label">Họ và tên</label>
-                                <input type="text" id="fullName" th:field="*{fullName}" class="form-control">
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">
-                                    Lỗi
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" th:field="*{email}" class="form-control">
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
-                                    Lỗi
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                <label for="phone" class="form-label">Số điện thoại</label>
-                                <input type="text" id="phone" th:field="*{phone}" class="form-control">
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
-                                    Lỗi
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                <label for="password" class="form-label">Mật khẩu</label>
-                                <input type="password" id="password" th:field="*{password}" class="form-control">
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
-                                    Lỗi
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                <label for="confirmPassword" class="form-label">Nhập lại mật khẩu</label>
-                                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control">
-                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">
-                                    Lỗi
+            <div class="col-12 col-lg-9 col-xl-8">
+                <div class="checkout-card login-card auth-card rounded-4 shadow-sm p-4 p-lg-5">
+                    <div class="row g-4 g-lg-5 align-items-start">
+                        <div class="col-12 col-lg-5">
+                            <div class="auth-intro-panel rounded-4 h-100 p-4 p-lg-5">
+                                <div class="d-grid gap-3">
+                                    <span class="home-section-kicker text-uppercase">Tài khoản mới</span>
+                                    <div class="d-grid gap-2">
+                                        <h1 class="h3 fw-bold mb-0">Đăng ký tài khoản</h1>
+                                        <p class="text-muted mb-0">Tạo tài khoản mới để lưu giỏ hàng, đặt hàng và theo dõi đơn mua.</p>
+                                    </div>
+                                    <div class="auth-intro-note rounded-4 p-4">
+                                        <span class="d-block text-muted fs-6 mb-2">Sẵn sàng mua sắm</span>
+                                        <strong class="d-block fw-bold">Trải nghiệm cá nhân hóa và quản lý đơn hàng dễ dàng hơn.</strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 btn-lg mt-4">Đăng ký</button>
-                    </form>
+                        <div class="col-12 col-lg-7">
+                            <div class="d-grid gap-4">
+                                <div class="alert auth-alert rounded-4 px-4 py-3 mb-0" th:if="${errorMessage}" th:text="${errorMessage}">
+                                    Có lỗi xảy ra
+                                </div>
 
-                    <div class="text-center mt-4 d-grid gap-2">
-                        <a th:href="@{/login}" class="text-decoration-none">Đã có tài khoản? Đăng nhập</a>
-                        <a th:href="@{/}" class="text-decoration-none">Quay về trang chủ</a>
+                                <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                                    <div class="row g-3 g-lg-4 auth-form-grid">
+                                        <div class="col-12 col-md-6">
+                                            <label for="username" class="form-label text-muted small mb-2">Tên đăng nhập</label>
+                                            <input type="text" id="username" th:field="*{username}" class="form-control auth-input rounded-4 px-4 py-3">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+                                                Lỗi
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="fullName" class="form-label text-muted small mb-2">Họ và tên</label>
+                                            <input type="text" id="fullName" th:field="*{fullName}" class="form-control auth-input rounded-4 px-4 py-3">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">
+                                                Lỗi
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="email" class="form-label text-muted small mb-2">Email</label>
+                                            <input type="email" id="email" th:field="*{email}" class="form-control auth-input rounded-4 px-4 py-3">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                                Lỗi
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="phone" class="form-label text-muted small mb-2">Số điện thoại</label>
+                                            <input type="text" id="phone" th:field="*{phone}" class="form-control auth-input rounded-4 px-4 py-3">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
+                                                Lỗi
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="password" class="form-label text-muted small mb-2">Mật khẩu</label>
+                                            <input type="password" id="password" th:field="*{password}" class="form-control auth-input rounded-4 px-4 py-3">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+                                                Lỗi
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="confirmPassword" class="form-label text-muted small mb-2">Nhập lại mật khẩu</label>
+                                            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control auth-input rounded-4 px-4 py-3">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">
+                                                Lỗi
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn home-btn-primary w-100 rounded-pill py-3 mt-4 mt-lg-5">Đăng ký</button>
+                                </form>
+
+                                <div class="text-center d-grid gap-2">
+                                    <a th:href="@{/login}" class="text-decoration-none auth-inline-link">Đã có tài khoản? Đăng nhập</a>
+                                    <a th:href="@{/}" class="text-decoration-none auth-inline-link">Quay về trang chủ</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

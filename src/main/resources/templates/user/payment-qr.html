@@ -14,40 +14,43 @@
 
 <main class="order-page">
     <section class="container order-shell">
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+        <div th:if="${errorMessage}" class="alert auth-alert rounded-4 px-4 py-3 shadow-sm" th:text="${errorMessage}">
             Có lỗi xảy ra
         </div>
 
-        <div class="payment-qr-card">
-            <h1>Thanh toán bằng QR ngân hàng</h1>
-            <p>Vui lòng chuyển khoản đúng nội dung để hệ thống demo xác nhận đơn hàng.</p>
+        <div class="payment-qr-card rounded-4 shadow-sm p-4 p-lg-5">
+            <div class="d-grid gap-3">
+                <span class="home-section-kicker text-uppercase">Thanh toán QR</span>
+                <h1>Thanh toán bằng QR ngân hàng</h1>
+                <p class="mb-0">Vui lòng chuyển khoản đúng nội dung để hệ thống demo xác nhận đơn hàng.</p>
+            </div>
 
-            <img class="payment-qr-image" th:src="@{/images/payment/bank-qr.png}" alt="QR ngân hàng">
+            <img class="payment-qr-image rounded-4" th:src="@{/images/payment/bank-qr.png}" alt="QR ngân hàng">
 
             <div class="payment-qr-info">
-                <div>
+                <div class="rounded-4 p-4">
                     <span>Mã đơn hàng</span>
                     <strong th:text="${order.orderCode}">ORD</strong>
                 </div>
-                <div>
+                <div class="rounded-4 p-4">
                     <span>Số tiền cần thanh toán</span>
                     <strong th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
                         0 đ
                     </strong>
                 </div>
-                <div>
+                <div class="rounded-4 p-4">
                     <span>Nội dung chuyển khoản</span>
                     <strong th:text="${order.orderCode}">ORD</strong>
                 </div>
             </div>
 
-            <p class="payment-qr-note">
+            <p class="payment-qr-note mb-4">
                 Sau khi chuyển khoản, bấm nút xác nhận đã thanh toán.
             </p>
 
             <form th:action="@{/orders/{orderId}/confirm-payment(orderId=${order.orderId})}" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <button type="submit" class="btn btn-primary btn-lg">Tôi đã thanh toán</button>
+                <button type="submit" class="btn home-btn-primary rounded-pill px-4 px-lg-5 py-3">Tôi đã thanh toán</button>
             </form>
         </div>
     </section>

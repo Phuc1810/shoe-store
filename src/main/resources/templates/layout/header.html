@@ -83,35 +83,29 @@
                         </button>
                     </form>
 
-                    <a class="btn home-icon-button" th:href="@{/cart}" aria-label="Giỏ hàng">
+                    <a class="btn home-icon-button home-cart-button position-relative" th:href="@{/cart}" aria-label="Giỏ hàng">
                         <i class="bi bi-cart3"></i>
+                        <span class="home-cart-badge"
+                              th:if="${cartItemCount != null and cartItemCount > 0}"
+                              th:text="${cartItemCount > 99 ? '99+' : cartItemCount}">
+                            1
+                        </span>
                     </a>
 
-                    <div sec:authorize="isAnonymous()" class="dropdown home-account-menu">
-                        <a class="btn home-icon-button" th:href="@{/login}" aria-label="Đăng nhập">
-                            <i class="bi bi-person"></i>
-                        </a>
-                        <button class="btn home-icon-button home-account-toggle dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản">
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" th:href="@{/login}">Đăng nhập</a></li>
-                            <li><a class="dropdown-item" th:href="@{/register}">Đăng ký</a></li>
-                        </ul>
+                    <div sec:authorize="isAnonymous()" class="home-login-entry anonymous-header-state">
+                        <a class="btn home-login-button rounded-pill px-4 py-2" th:href="@{/login}">Đăng nhập</a>
                     </div>
 
                     <div sec:authorize="isAuthenticated()" class="dropdown home-account-menu">
-                        <a class="btn home-icon-button" th:href="@{/profile}" aria-label="Thông tin cá nhân">
-                            <i class="bi bi-person"></i>
-                        </a>
-                        <button class="btn home-icon-button home-account-toggle dropdown-toggle" type="button"
+                        <button class="btn home-account-button home-account-toggle dropdown-toggle rounded-pill px-3 py-2" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản">
+                            <span class="home-account-greeting">Chào,</span>
+                            <strong class="home-account-name" sec:authentication="principal.displayName">user</strong>
                             <i class="bi bi-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <h6 class="dropdown-header" sec:authentication="principal.username">user</h6>
+                                <h6 class="dropdown-header" sec:authentication="principal.displayName">user</h6>
                             </li>
                             <li><a class="dropdown-item" th:href="@{/profile}">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" th:href="@{/orders}">Đơn hàng của tôi</a></li>
@@ -130,6 +124,24 @@
             </div>
         </div>
     </nav>
+
+    <div class="modal fade" id="authRequiredModal" tabindex="-1" aria-labelledby="authRequiredModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content auth-required-modal rounded-4 border-0 shadow-sm">
+                <div class="modal-header border-0 px-4 px-lg-5 pt-4 pt-lg-5 pb-2">
+                    <h5 class="modal-title fw-bold" id="authRequiredModalLabel">Bạn chưa đăng nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body px-4 px-lg-5 pb-3">
+                    <p class="text-muted mb-0">Vui lòng đăng nhập hoặc đăng ký tài khoản để xem thông tin cá nhân.</p>
+                </div>
+                <div class="modal-footer border-0 px-4 px-lg-5 pb-4 pb-lg-5 pt-2">
+                    <button type="button" class="btn home-btn-ghost rounded-pill px-4 py-2" data-bs-dismiss="modal">Hủy</button>
+                    <a class="btn home-btn-primary rounded-pill px-4 py-2" th:href="@{/login}">Đăng nhập / Đăng ký</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </header>
 </body>
 </html>

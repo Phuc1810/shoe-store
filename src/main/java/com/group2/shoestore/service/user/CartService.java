@@ -99,6 +99,21 @@ public class CartService {
                         .build());
     }
 
+    @Transactional(readOnly = true)
+    public int getCartItemCountForCurrentUser() {
+        if (!currentUserService.isAuthenticated()) {
+            return 0;
+        }
+
+        Long currentUserId = currentUserService.getCurrentUserId();
+        return cartRepository.findByUserId(currentUserId)
+                .map(cart -> cartItemRepository.findByCartId(cart.getId())
+                        .stream()
+                        .mapToInt(CartItem::getQuantity)
+                        .sum())
+                .orElse(0);
+    }
+
     private Cart getOrCreateCart() {
         Long currentUserId = currentUserService.getCurrentUserId();
         return cartRepository.findByUserId(currentUserId)

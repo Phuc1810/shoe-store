@@ -14,137 +14,150 @@
 
 <main class="product-detail-page">
     <section class="container product-detail-shell">
-        <div class="row g-5 align-items-start">
-            <div class="col-12 col-lg-6">
-                <div class="product-detail-media">
-                    <img id="mainProductImage"
-                         class="product-detail-image"
-                         th:src="${product.mainImageUrl}"
-                         th:alt="${product.productName}">
+        <div class="product-detail-frame rounded-4 shadow-sm p-4 p-lg-5">
+            <div class="row g-4 g-lg-5 align-items-start">
+                <div class="col-12 col-lg-6">
+                    <div class="product-detail-media rounded-4 shadow-sm">
+                        <img id="mainProductImage"
+                             class="product-detail-image"
+                             th:src="${product.mainImageUrl}"
+                             th:alt="${product.productName}">
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-12 col-lg-6">
-                <div class="product-detail-info">
-                    <p class="product-detail-meta mb-2">
-                        <span th:text="${product.brandName}">Thương hiệu</span>
-                        <span> / </span>
-                        <span th:text="${product.categoryName}">Danh mục</span>
-                    </p>
+                <div class="col-12 col-lg-6">
+                    <div class="product-detail-info rounded-4 shadow-sm p-4 p-lg-5">
+                        <div class="d-grid gap-3">
+                            <p class="product-detail-meta mb-0">
+                                <span th:text="${product.brandName}">Thương hiệu</span>
+                                <span> / </span>
+                                <span th:text="${product.categoryName}">Danh mục</span>
+                            </p>
 
-                    <h1 th:text="${product.productName}">Tên sản phẩm</h1>
+                            <h1 th:text="${product.productName}">Tên sản phẩm</h1>
 
-                    <p class="mb-3">
-                        <span class="badge product-gender-badge" th:text="${product.gender}">UNISEX</span>
-                    </p>
+                            <div>
+                                <p class="product-detail-gender mb-0">
+                                    <span class="product-gender-badge rounded-pill px-3 py-2 d-inline-flex align-items-center" th:text="${product.gender}">UNISEX</span>
+                                </p>
+                            </div>
 
-                    <p class="product-detail-short" th:text="${product.shortDescription}">Mô tả ngắn</p>
+                            <p class="product-detail-short mb-0" th:text="${product.shortDescription}">Mô tả ngắn</p>
 
-                    <p id="displayPrice" class="product-detail-price"
-                       th:text="${product.displayPrice != null ? #numbers.formatDecimal(product.displayPrice, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
-                        0 đ
-                    </p>
+                            <p id="displayPrice" class="product-detail-price mb-0"
+                               th:text="${product.displayPrice != null ? #numbers.formatDecimal(product.displayPrice, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                                0 đ
+                            </p>
 
-                    <div class="product-selected-grid">
-                        <div>
-                            <span>Màu đang chọn</span>
-                            <strong id="selectedColor">Chưa chọn</strong>
-                        </div>
-                        <div>
-                            <span>Size đang chọn</span>
-                            <strong id="selectedSize">Chưa chọn</strong>
-                        </div>
-                        <div>
-                            <span>Tồn kho</span>
-                            <strong id="selectedStock">Chưa chọn</strong>
-                        </div>
-                        <div>
-                            <span>SKU</span>
-                            <strong id="selectedSku">Chưa chọn</strong>
+                            <div class="product-selected-grid">
+                                <div class="product-selected-item rounded-4 p-4">
+                                    <span>Màu đang chọn</span>
+                                    <strong id="selectedColor">Chưa chọn</strong>
+                                </div>
+                                <div class="product-selected-item rounded-4 p-4">
+                                    <span>Size đang chọn</span>
+                                    <strong id="selectedSize">Chưa chọn</strong>
+                                </div>
+                                <div class="product-selected-item rounded-4 p-4">
+                                    <span>Tồn kho</span>
+                                    <strong id="selectedStock">Chưa chọn</strong>
+                                </div>
+                                <div class="product-selected-item rounded-4 p-4">
+                                    <span>SKU</span>
+                                    <strong id="selectedSku">Chưa chọn</strong>
+                                </div>
+                            </div>
+
+                            <section class="product-variant-section">
+                                <div class="d-grid gap-3">
+                                    <h2 class="mb-0">Chọn màu / size</h2>
+                                    <div th:if="${#lists.isEmpty(product.variants)}" class="home-empty-state rounded-4 shadow-sm p-4">
+                                        Sản phẩm hiện chưa có biến thể
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-3" th:if="${!#lists.isEmpty(product.variants)}">
+                                        <button type="button"
+                                                class="btn product-variant-option home-btn-ghost rounded-pill px-4 py-3"
+                                                th:each="variant, iterStat : ${product.variants}"
+                                                th:classappend="${iterStat.first} ? ' active'"
+                                                th:attr="data-variant-id=${variant.variantId},
+                                                         data-image-url=${variant.imageUrl},
+                                                         data-price=${variant.price != null ? #numbers.formatDecimal(variant.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'},
+                                                         data-color=${variant.color},
+                                                         data-size=${variant.size},
+                                                         data-stock=${variant.stockQuantity},
+                                                         data-sku=${variant.sku}"
+                                                th:text="${variant.color + ' / ' + variant.size}">
+                                            Màu / Size
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <form th:action="@{/cart/add}" method="post" class="product-add-cart-form">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <input type="hidden" id="selectedVariantId" name="productVariantId">
+                                <div class="product-quantity-control">
+                                    <label for="quantity" class="form-label mb-2">Số lượng</label>
+                                    <input type="number"
+                                           id="quantity"
+                                           name="quantity"
+                                           class="form-control rounded-pill px-4"
+                                           min="1"
+                                           value="1"
+                                           th:disabled="${#lists.isEmpty(product.variants)}">
+                                </div>
+                                <button type="submit"
+                                        id="addToCartButton"
+                                        class="btn home-btn-primary rounded-pill px-4 px-lg-5 py-3"
+                                        th:disabled="${#lists.isEmpty(product.variants)}">
+                                    Thêm vào giỏ hàng
+                                </button>
+                            </form>
                         </div>
                     </div>
-
-                    <section class="product-variant-section">
-                        <h2>Chọn màu / size</h2>
-                        <div th:if="${#lists.isEmpty(product.variants)}" class="alert alert-info">
-                            Sản phẩm hiện chưa có biến thể
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(product.variants)}">
-                            <button type="button"
-                                    class="btn btn-outline-dark product-variant-option"
-                                    th:each="variant, iterStat : ${product.variants}"
-                                    th:classappend="${iterStat.first} ? ' active'"
-                                    th:attr="data-variant-id=${variant.variantId},
-                                             data-image-url=${variant.imageUrl},
-                                             data-price=${variant.price != null ? #numbers.formatDecimal(variant.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'},
-                                             data-color=${variant.color},
-                                             data-size=${variant.size},
-                                             data-stock=${variant.stockQuantity},
-                                             data-sku=${variant.sku}"
-                                    th:text="${variant.color + ' / ' + variant.size}">
-                                Màu / Size
-                            </button>
-                        </div>
-                    </section>
-
-                    <form th:action="@{/cart/add}" method="post" class="product-add-cart-form">
-                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" id="selectedVariantId" name="productVariantId">
-                        <div>
-                            <label for="quantity" class="form-label">Số lượng</label>
-                            <input type="number"
-                                   id="quantity"
-                                   name="quantity"
-                                   class="form-control"
-                                   min="1"
-                                   value="1"
-                                   th:disabled="${#lists.isEmpty(product.variants)}">
-                        </div>
-                        <button type="submit"
-                                id="addToCartButton"
-                                class="btn btn-primary btn-lg"
-                                th:disabled="${#lists.isEmpty(product.variants)}">
-                            Thêm vào giỏ hàng
-                        </button>
-                    </form>
                 </div>
             </div>
-        </div>
 
-        <section class="product-description-section">
-            <h2>Mô tả chi tiết</h2>
-            <p class="product-description" th:text="${product.description}">Mô tả chi tiết</p>
-        </section>
+            <section class="product-description-section rounded-4 shadow-sm p-4 p-lg-5 mt-4 mt-lg-5">
+                <div class="d-grid gap-3">
+                    <h2 class="mb-0">Mô tả chi tiết</h2>
+                    <p class="product-description mb-0" th:text="${product.description}">Mô tả chi tiết</p>
+                </div>
+            </section>
+        </div>
     </section>
 
     <section class="container product-section suggested-section">
-        <div class="section-heading">
-            <div>
-                <h2>Sản phẩm gợi ý</h2>
-                <p>Có thể bạn cũng thích</p>
+        <div class="section-heading home-section-heading mb-4 mb-lg-5">
+            <div class="d-grid gap-2">
+                <span class="home-section-kicker text-uppercase">Gợi ý thêm</span>
+                <div>
+                    <h2>Sản phẩm gợi ý</h2>
+                    <p>Có thể bạn cũng thích</p>
+                </div>
             </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(product.suggestedProducts)}" class="alert alert-info">
+        <div th:if="${#lists.isEmpty(product.suggestedProducts)}" class="home-empty-state rounded-4 shadow-sm p-4 p-lg-5">
             Chưa có sản phẩm gợi ý.
         </div>
 
-        <div class="row g-4" th:if="${!#lists.isEmpty(product.suggestedProducts)}">
+        <div class="row g-4 g-xl-5" th:if="${!#lists.isEmpty(product.suggestedProducts)}">
             <div class="col-12 col-md-6 col-lg-3" th:each="suggested : ${product.suggestedProducts}">
                 <a class="product-card-link" th:href="@{/products/{id}(id=${suggested.productId})}">
-                    <article class="product-card">
-                        <div class="product-card-media">
+                    <article class="product-card home-product-card rounded-4 shadow-sm h-100">
+                        <div class="product-card-media home-product-card-media">
                             <img class="product-card-image" th:src="${suggested.imageUrl}" th:alt="${suggested.productName}">
                         </div>
-                        <div class="product-card-body">
+                        <div class="product-card-body home-product-card-body p-4">
                             <h3 th:text="${suggested.productName}">Tên sản phẩm</h3>
-                            <p>
+                            <p class="home-product-meta mb-3">
                                 <span th:text="${suggested.brandName}">Brand</span>
                                 <span> / </span>
                                 <span th:text="${suggested.categoryName}">Category</span>
                             </p>
-                            <strong th:text="${suggested.price != null ? #numbers.formatDecimal(suggested.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
+                            <strong class="home-product-price" th:text="${suggested.price != null ? #numbers.formatDecimal(suggested.price, 0, 'POINT', 0, 'COMMA') + ' đ' : 'Liên hệ'}">
                                 0 đ
                             </strong>
                         </div>

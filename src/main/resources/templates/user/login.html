@@ -15,45 +15,64 @@
 <main class="order-page">
     <section class="container order-shell">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-5">
-                <div class="checkout-card login-card">
-                    <div class="text-center mb-4">
-                        <h1 class="h3 fw-bold mb-2">Đăng nhập</h1>
-                        <p class="text-muted mb-0">Tiếp tục mua sắm và quản lý đơn hàng của bạn.</p>
-                    </div>
-
-                    <div th:if="${param.registered}" class="alert alert-success">
-                        Đăng ký thành công. Vui lòng đăng nhập.
-                    </div>
-
-                    <div th:if="${param.error}" class="alert alert-danger">
-                        Tên đăng nhập hoặc mật khẩu không đúng
-                    </div>
-
-                    <div th:if="${param.logout}" class="alert alert-success">
-                        Bạn đã đăng xuất thành công
-                    </div>
-
-                    <form th:action="@{/login}" method="post">
-                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Tên đăng nhập</label>
-                            <input type="text" id="username" name="username" class="form-control" required autofocus>
+            <div class="col-12 col-lg-9 col-xl-8">
+                <div class="checkout-card login-card auth-card rounded-4 shadow-sm p-4 p-lg-5">
+                    <div class="row g-4 g-lg-5 align-items-start">
+                        <div class="col-12 col-lg-5">
+                            <div class="auth-intro-panel rounded-4 h-100 p-4 p-lg-5">
+                                <div class="d-grid gap-3">
+                                    <span class="home-section-kicker text-uppercase">Chào mừng trở lại</span>
+                                    <div class="d-grid gap-2">
+                                        <h1 class="h3 fw-bold mb-0">Đăng nhập</h1>
+                                        <p class="text-muted mb-0">Tiếp tục mua sắm và quản lý đơn hàng của bạn.</p>
+                                    </div>
+                                    <div class="auth-intro-note rounded-4 p-4">
+                                        <span class="d-block text-muted fs-6 mb-2">Shoe Store</span>
+                                        <strong class="d-block fw-bold">Theo dõi giỏ hàng, đơn mua và trải nghiệm cá nhân hóa trong một nơi.</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
+                        <div class="col-12 col-lg-7">
+                            <div class="d-grid gap-4">
+                                <div th:if="${param.registered}" class="alert cart-success-alert rounded-4 px-4 py-3 shadow-sm mb-0">
+                                    Đăng ký thành công. Vui lòng đăng nhập.
+                                </div>
+
+                                <div th:if="${param.error}" class="alert auth-alert rounded-4 px-4 py-3 shadow-sm mb-0">
+                                    Tên đăng nhập hoặc mật khẩu không đúng
+                                </div>
+
+                                <div th:if="${param.logout}" class="alert cart-success-alert rounded-4 px-4 py-3 shadow-sm mb-0">
+                                    Bạn đã đăng xuất thành công
+                                </div>
+
+                                <form th:action="@{/login}" method="post">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                                    <div class="d-grid gap-3 gap-lg-4">
+                                        <div>
+                                            <label for="username" class="form-label text-muted small mb-2">Tên đăng nhập</label>
+                                            <input type="text" id="username" name="username" class="form-control auth-input rounded-4 px-4 py-3" required autofocus>
+                                        </div>
+
+                                        <div>
+                                            <label for="password" class="form-label text-muted small mb-2">Mật khẩu</label>
+                                            <input type="password" id="password" name="password" class="form-control auth-input rounded-4 px-4 py-3" required>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn home-btn-primary w-100 rounded-pill py-3 mt-4 mt-lg-5">Đăng nhập</button>
+                                </form>
+
+                                <div class="text-center d-grid gap-2">
+                                    <a th:href="@{/register}" class="text-decoration-none auth-inline-link">Chưa có tài khoản? Đăng ký</a>
+                                    <a th:href="@{/products}" class="text-decoration-none auth-inline-link">Xem sản phẩm</a>
+                                    <a th:href="@{/}" class="text-decoration-none auth-inline-link">Quay về trang chủ</a>
+                                </div>
+                            </div>
                         </div>
-
-                        <button type="submit" class="btn btn-primary w-100 btn-lg">Đăng nhập</button>
-                    </form>
-
-                    <div class="text-center mt-4 d-grid gap-2">
-                        <a th:href="@{/register}" class="text-decoration-none">Chưa có tài khoản? Đăng ký</a>
-                        <a th:href="@{/products}" class="text-decoration-none">Xem sản phẩm</a>
-                        <a th:href="@{/}" class="text-decoration-none">Quay về trang chủ</a>
                     </div>
                 </div>
             </div>

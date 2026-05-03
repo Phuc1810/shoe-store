@@ -14,58 +14,63 @@
 
 <main class="order-page">
     <section class="container order-shell">
-        <div class="section-heading">
-            <div>
-                <h1>Thông tin cá nhân</h1>
-                <p>Thông tin tài khoản demo đang sử dụng trên Shoe Store.</p>
+        <div class="section-heading profile-page-heading rounded-4 shadow-sm p-4 p-lg-5 mb-4 mb-lg-5">
+            <div class="d-grid gap-2">
+                <span class="home-section-kicker text-uppercase">Tài khoản</span>
+                <div>
+                    <h1>Thông tin cá nhân</h1>
+                    <p>Thông tin tài khoản đang sử dụng trên Shoe Store.</p>
+                </div>
             </div>
-            <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-outline-primary" th:href="@{/orders}">Đơn hàng của tôi</a>
-                <a class="btn btn-primary" th:href="@{/products}">Tiếp tục mua sắm</a>
+            <div class="d-flex flex-wrap gap-3 profile-page-actions">
+                <a class="btn home-btn-ghost rounded-pill px-4 py-2" th:href="@{/orders}">Đơn hàng của tôi</a>
+                <a class="btn home-btn-primary rounded-pill px-4 py-2" th:href="@{/products}">Tiếp tục mua sắm</a>
             </div>
         </div>
 
-        <section class="profile-card">
-            <div class="row g-4 align-items-center">
+        <section class="profile-card profile-shell-card rounded-4 shadow-sm p-4 p-lg-5">
+            <div class="row g-4 g-lg-5 align-items-stretch">
                 <div class="col-12 col-lg-4">
-                    <div class="profile-avatar-panel">
+                    <div class="profile-avatar-panel rounded-4 h-100 p-4 p-lg-5">
                         <div class="profile-avatar">
                             <i class="bi bi-person-circle"></i>
                         </div>
-                        <h2 th:text="${profile.fullName != null && !#strings.isEmpty(profile.fullName) ? profile.fullName : profile.username}">
-                            Demo User
-                        </h2>
-                        <p th:text="${profile.roleName != null ? profile.roleName : 'USER'}">USER</p>
+                        <div class="d-grid gap-2">
+                            <h2 th:text="${profile.fullName != null && !#strings.isEmpty(profile.fullName) ? profile.fullName : profile.username}">
+                                Demo User
+                            </h2>
+                            <p th:text="${profile.roleName != null ? profile.roleName : 'USER'}">USER</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 col-lg-8">
                     <div class="profile-info-grid">
-                        <div class="profile-info-item">
+                        <div class="profile-info-item rounded-4 p-4">
                             <span>Tên đăng nhập</span>
                             <strong th:text="${profile.username}">demo-user</strong>
                         </div>
-                        <div class="profile-info-item">
+                        <div class="profile-info-item rounded-4 p-4">
                             <span>Họ và tên</span>
                             <strong th:text="${profile.fullName != null ? profile.fullName : 'Chưa cập nhật'}">Nguyễn Văn A</strong>
                         </div>
-                        <div class="profile-info-item">
+                        <div class="profile-info-item rounded-4 p-4">
                             <span>Email</span>
                             <strong th:text="${profile.email != null ? profile.email : 'Chưa cập nhật'}">demo@example.com</strong>
                         </div>
-                        <div class="profile-info-item">
+                        <div class="profile-info-item rounded-4 p-4">
                             <span>Số điện thoại</span>
                             <strong th:text="${profile.phone != null ? profile.phone : 'Chưa cập nhật'}">0900000000</strong>
                         </div>
-                        <div class="profile-info-item">
+                        <div class="profile-info-item rounded-4 p-4">
                             <span>Vai trò</span>
                             <strong th:text="${profile.roleName != null ? profile.roleName : 'Chưa xác định'}">USER</strong>
                         </div>
-                        <div class="profile-info-item">
+                        <div class="profile-info-item rounded-4 p-4">
                             <span>Trạng thái</span>
                             <strong th:text="${profile.status != null ? profile.status : 'Chưa cập nhật'}">Đang hoạt động</strong>
                         </div>
-                        <div class="profile-info-item profile-info-item-full">
+                        <div class="profile-info-item profile-info-item-full rounded-4 p-4">
                             <span>Ngày tạo tài khoản</span>
                             <strong th:text="${profile.createdAt != null ? #temporals.format(profile.createdAt, 'dd/MM/yyyy HH:mm') : 'Chưa có dữ liệu'}">
                                 01/05/2026 09:00
