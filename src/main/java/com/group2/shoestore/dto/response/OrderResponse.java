@@ -43,7 +43,7 @@ public class OrderResponse {
 
     private String orderStatus;
 
-    // Text tiếng Việt cho user UI
+
     private String paymentStatusText;
 
     private String orderStatusText;

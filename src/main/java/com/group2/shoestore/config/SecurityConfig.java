@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/register",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers("/admin/**").permitAll()
+                        //.requestMatchers("/admin/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/cart",
                                 "/cart/**",
@@ -57,6 +58,7 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
+                        //.defaultSuccessUrl("/after-login", true)
                         .failureUrl("/login?error")
                 )
                 .logout(logout -> logout
