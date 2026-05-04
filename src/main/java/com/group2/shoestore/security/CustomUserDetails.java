@@ -27,9 +27,15 @@ public class CustomUserDetails implements UserDetails {
         }
 
         String rawRoleName = role.getName().trim();
-        String roleName = rawRoleName.startsWith("ROLE_")
-                ? rawRoleName
-                : "ROLE_" + rawRoleName.toUpperCase();
+        String normalizedRoleName = rawRoleName.toUpperCase();
+        String roleName;
+        if (rawRoleName.startsWith("ROLE_")) {
+            roleName = rawRoleName;
+        } else if ("USER".equals(normalizedRoleName) || "CUSTOMER".equals(normalizedRoleName)) {
+            roleName = "ROLE_USER";
+        } else {
+            roleName = "ROLE_" + normalizedRoleName;
+        }
 
         return List.of(new SimpleGrantedAuthority(roleName));
     }
