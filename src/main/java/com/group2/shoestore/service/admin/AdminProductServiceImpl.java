@@ -44,17 +44,14 @@ public class AdminProductServiceImpl implements AdminProductService {
     public Page<ProductListItemResponse> search(String name, Long categoryId, Long brandId, String status, Pageable pageable) {
         log.info("Searching products: name={}, categoryId={}, brandId={}, status={}", name, categoryId, brandId, status);
 
-        // 1. Xử lý name: Nếu có giá trị thì bọc %, nếu rỗng/null thì để null hoàn toàn
+
         String searchName = (name != null && !name.trim().isEmpty()) ? "%" + name.trim() + "%" : null;
 
-        // 2. Xử lý status: Nếu là chuỗi rỗng "" thì chuyển về null để SQL nhận diện được
         String searchStatus = (status != null && !status.trim().isEmpty()) ? status : null;
 
-        // 3. Xử lý ID: Đảm bảo nếu ID <= 0 (thường là giá trị mặc định của thẻ select) thì coi như null
         Long searchCategoryId = (categoryId != null && categoryId > 0) ? categoryId : null;
         Long searchBrandId = (brandId != null && brandId > 0) ? brandId : null;
 
-        // Truyền các biến đã được xử lý (searchName, searchStatus,...) vào repository
         Page<Product> products = productRepository.search(searchName, searchCategoryId, searchBrandId, searchStatus, pageable);
 
         return products.map(this::convertToListItemResponse);
@@ -79,14 +76,14 @@ public class AdminProductServiceImpl implements AdminProductService {
     public ProductResponse createProduct(ProductRequest request) {
         log.info("Creating new product: {}", request.getName());
 
-        // Kiểm tra category tồn tại
+
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> {
                     log.error("Category not found with id: {}", request.getCategoryId());
                     return new ResourceNotFoundException("Danh mục không tồn tại");
                 });
 
-        // Kiểm tra brand nếu có
+
         Brand brand = null;
         if (request.getBrandId() != null && request.getBrandId() > 0) {
             brand = brandRepository.findById(request.getBrandId())
@@ -96,10 +93,9 @@ public class AdminProductServiceImpl implements AdminProductService {
                     });
         }
 
-        // Tạo slug từ tên sản phẩm
+
         String slug = SlugUtil.toSlug(request.getName());
 
-        // Tạo entity Product
         Product product = new Product();
         product.setName(request.getName());
         product.setSlug(slug);
@@ -117,9 +113,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         return convertToResponse(savedProduct);
     }
 
-    /**
-     * Cập nhật sản phẩm
-     */
+
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         log.info("Updating product with id: {}", id);
@@ -130,14 +124,14 @@ public class AdminProductServiceImpl implements AdminProductService {
                     return new ResourceNotFoundException("Sản phẩm không tồn tại");
                 });
 
-        // Kiểm tra category
+
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> {
                     log.error("Category not found with id: {}", request.getCategoryId());
                     return new ResourceNotFoundException("Danh mục không tồn tại");
                 });
 
-        // Kiểm tra brand nếu có
+
         Brand brand = null;
         if (request.getBrandId() != null && request.getBrandId() > 0) {
             brand = brandRepository.findById(request.getBrandId())
@@ -147,7 +141,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                     });
         }
 
-        // Cập nhật dữ liệu
+
         product.setName(request.getName());
         product.setSlug(SlugUtil.toSlug(request.getName()));
         product.setCategory(category);

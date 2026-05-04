@@ -40,7 +40,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findByOrderStatusOrderByCreatedAtDesc(String orderStatus, Pageable pageable);
 
-    // Đơn còn có thể xử lý/hủy trong flow hiện tại: PENDING_PAYMENT hoặc CONFIRMED
+
     @Query("""
             select o
             from Order o

@@ -13,15 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Controller quản lý đơn hàng cho Admin
- * Prefix: /admin/orders
- */
+
 @Controller
 @RequestMapping("/admin/orders")
 @RequiredArgsConstructor
 @Slf4j
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminOrderController {
 
     private static final String[] ADMIN_ORDER_STATUSES = {
@@ -30,9 +27,7 @@ public class AdminOrderController {
     private final AdminOrderService adminOrderService;
     private static final int PAGE_SIZE = 10;
 
-    /**
-     * GET /admin/orders - Hiển thị danh sách đơn hàng với phân trang, tìm kiếm và lọc trạng thái
-     */
+
     @GetMapping
     public String listOrders(
             @RequestParam(required = false) String orderCode,
@@ -53,7 +48,7 @@ public class AdminOrderController {
             model.addAttribute("customerName", customerName);
             model.addAttribute("status", status);
             
-            // Các trạng thái có sẵn để lọc
+
             model.addAttribute("statuses", ADMIN_ORDER_STATUSES);
             
             return "admin/order/list";
@@ -64,9 +59,7 @@ public class AdminOrderController {
         }
     }
 
-    /**
-     * GET /admin/orders/{id} - Xem chi tiết đơn hàng
-     */
+
     @GetMapping("/{id}")
     public String viewOrderDetail(@PathVariable Long id, Model model) {
         log.info("Viewing order detail for id: {}", id);
@@ -75,7 +68,7 @@ public class AdminOrderController {
             var order = adminOrderService.getOrderById(id);
             model.addAttribute("order", order);
             
-            // Các trạng thái có thể chuyển tới
+
             model.addAttribute("availableStatuses", ADMIN_ORDER_STATUSES);
             
             return "admin/order/detail";
@@ -85,9 +78,7 @@ public class AdminOrderController {
         }
     }
 
-    /**
-     * PATCH /admin/orders/{id}/status - Cập nhật trạng thái đơn hàng
-     */
+
     //@PatchMapping("/{id}/status")
     @PostMapping("/{id}/status")
     public String updateOrderStatus(
@@ -110,9 +101,7 @@ public class AdminOrderController {
         return "redirect:/admin/orders/" + id;
     }
 
-    /**
-     * POST /admin/orders/{id}/cancel - Hủy đơn hàng
-     */
+
     @PostMapping("/{id}/cancel")
     public String cancelOrder(
             @PathVariable Long id,
